@@ -6,7 +6,7 @@ title: Wiki Index
 
 _jacob-omp-collections 知识库 — 记录 OMP 插件、Skills、MCP 配置的开发经验与最佳实践。_
 
-_This index is automatically maintained. Last updated: 2026-05-31_
+_This index is automatically maintained. Last updated: 2026-06-01_
 
 ## Projects
 
@@ -31,6 +31,7 @@ _This index is automatically maintained. Last updated: 2026-05-31_
 - [[projects/jacob-omp-collections/skills/adding-a-plugin]] — 添加 Marketplace 插件步骤（ #omp #marketplace #howto )
 - [[projects/jacob-omp-collections/skills/adding-skills-and-mcp]] — 添加 Skills 和 MCP Server（ #omp #skills #mcp #howto )
 - [[projects/jacob-omp-collections/skills/aicodegather-troubleshooting]] — aicodegather 排查记录与已知问题（ #aicodegather #debugging #troubleshooting )
+- [[projects/jacob-omp-collections/skills/plugin-config-debugging]] — OMP 插件配置调试：lock 文件、key 匹配、marketplace 冲突（ #omp #plugin #debugging #configuration )
 
 #### References
 

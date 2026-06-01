@@ -5,7 +5,7 @@ tags: [omp, documentation, reference]
 aliases: [项目文档]
 sources:
   - AGENTS.md
-summary: jacob-omp-collections 项目文档 AGENTS.md 的完整内容摘要，包括项目结构、安装和操作指南。
+summary: [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] 项目文档 AGENTS.md 的完整内容摘要，包括项目结构、安装和操作指南。
 provenance:
   extracted: 0.95
   inferred: 0.05

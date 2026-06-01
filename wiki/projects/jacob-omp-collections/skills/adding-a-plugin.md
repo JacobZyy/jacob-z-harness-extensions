@@ -5,7 +5,7 @@ tags: [omp, marketplace, plugin, howto]
 aliases: [如何添加插件]
 sources:
   - AGENTS.md
-summary: 在 jacob-omp-collections 中添加新的 Marketplace 插件（extensions/tools/hooks/commands）的完整步骤。
+summary: 在 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] 中添加新的 Marketplace 插件（extensions/tools/hooks/commands）的完整步骤。
 provenance:
   extracted: 0.95
   inferred: 0.05

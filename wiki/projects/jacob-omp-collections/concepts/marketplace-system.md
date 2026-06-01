@@ -15,7 +15,7 @@ base_confidence: 0.6
 lifecycle: draft
 lifecycle_changed: 2026-05-31
 created: 2026-05-31T02:30:00Z
-updated: 2026-05-31T02:30:00Z
+updated: 2026-06-01T12:00:00Z
 ---
 
 # OMP Marketplace 系统
@@ -33,7 +33,7 @@ OMP Marketplace 是一个插件分发系统。每个 marketplace 是一个 Git �
   "description": "...",
   "plugins": [
     {
-      "name": "aicodegather",
+      "name": "[[projects/jacob-omp-collections/entities/aicodegather|aicodegather]]",
       "description": "...",
       "source": "./packages/aicodegather",
       "category": "development"
@@ -107,3 +107,18 @@ Dev 模式会直接 symlink 到本地开发目录，代码修改后重启 OMP �
 - Skills 和 MCP server **不能**通过 Marketplace 插件分发，只能通过本地 symlink/merge 安装
 - Marketplace 的 name 和 owner 顶层字段不能修改
 - 插件需要 `package.json` 中声明 `omp.extensions` 字段
+
+## 常见问题
+
+### Marketplace 与 npm 插件共存冲突
+
+通过 `npm install @jacob-z/aicodegather` 和 `/marketplace install aicodegather@jacob-omp-collections` 安装同一插件会导致重复。两者独立管理：
+
+- npm 安装写入 `~/.omp/plugins/package.json` 的 dependencies
+- marketplace 安装写入 `~/.config/omp/installed_plugins.json`
+
+清理方法见 [[projects/jacob-omp-collections/skills/plugin-config-debugging|插件配置调试]]。
+
+### Marketplace 本质是 Claude 兼容层
+
+Marketplace 的设计初衷是为 Claude Code 生态的插件提供适配。OMP 原生推荐使用 npm 方式安装插件（`omp install @jacob-z/aicodegather`）。Marketplace 安装方式在某些场景下可能存在加载顺序或版本同步问题。^[inferred]

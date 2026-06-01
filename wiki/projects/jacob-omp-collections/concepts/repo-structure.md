@@ -5,7 +5,7 @@ tags: [omp, repo-structure, conventions]
 aliases: [目录结构, 项目布局]
 sources:
   - AGENTS.md
-summary: jacob-omp-collections 的目录组织规范，每个顶层目录的职责与约束。
+summary: [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] 的目录组织规范，每个顶层目录的职责与约束。
 provenance:
   extracted: 0.9
   inferred: 0.1

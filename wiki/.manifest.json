@@ -1,9 +1,9 @@
 {
   "version": 1,
   "stats": {
-    "total_sources_ingested": 10,
-    "total_pages": 10,
-    "last_ingest": "2026-05-31T06:00:00Z"
+    "total_sources_ingested": 11,
+    "total_pages": 11,
+    "last_ingest": "2026-06-01T12:00:00Z"
   },
   "sources": {
     "AGENTS.md": {
@@ -128,6 +128,18 @@
       "pages_updated": [
         "projects/jacob-omp-collections/jacob-omp-collections.md",
         "projects/jacob-omp-collections/entities/aicodegather.md"
+      ]
+    },
+    "omp-sessions-may31-jun01": {
+      "ingested_at": "2026-06-01T12:00:00Z",
+      "source_type": "session_transcript",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/skills/plugin-config-debugging.md"
+      ],
+      "pages_updated": [
+        "projects/jacob-omp-collections/concepts/marketplace-system.md",
+        "projects/jacob-omp-collections/entities/oxlint-gate.md"
       ]
     }
   }

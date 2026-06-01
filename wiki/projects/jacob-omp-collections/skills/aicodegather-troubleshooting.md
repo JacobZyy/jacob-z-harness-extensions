@@ -6,7 +6,7 @@ aliases: [aicodegather 调试, OMP 插件排查]
 sources:
   - packages/aicodegather/TROUBLESHOOTING.md
   - ~/.omp/agent/sessions/-Documents-workspace-jacob-open-source-oh-my-pi/
-  - ~/.omp/agent/sessions/-Documents-workspace-jacob-open-source-jacob-omp-collections/
+  - ~/.omp/agent/sessions/-Documents-workspace-jacob-open-source-[[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]]/
   - packages/oxlint-gate/src/index.ts
   - install.sh
 summary: >-

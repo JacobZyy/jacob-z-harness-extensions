@@ -5,7 +5,7 @@ tags: [omp, skills, mcp, howto]
 aliases: [如何添加 Skill 和 MCP Server]
 sources:
   - AGENTS.md
-summary: 在 jacob-omp-collections 中添加 OMP Skill 和 MCP Server 的步骤与规范。
+summary: 在 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] 中添加 OMP Skill 和 MCP Server 的步骤与规范。
 provenance:
   extracted: 0.95
   inferred: 0.05

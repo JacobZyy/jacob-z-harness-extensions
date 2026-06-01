@@ -1,14 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join, resolve as resolvePath } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { createLogger } from './logger'
 
 const log = createLogger('config')
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const pkg = JSON.parse(readFileSync(resolvePath(__dirname, '../package.json'), 'utf-8')) as { version: string }
-export const VERSION = `aicodegather-omp@${pkg.version}` as string
+export const VERSION = 'aicodegather-omp@1.6.0'
 
 /** Runtime config loaded from ~/.config/aicodegather.json */
 export interface AicodegatherConfig {

@@ -17,7 +17,7 @@ base_confidence: 0.85
 lifecycle: draft
 lifecycle_changed: 2026-05-31
 created: 2026-05-31T06:00:00Z
-updated: 2026-05-31T06:00:00Z
+updated: 2026-06-01T12:00:00Z
 ---
 
 # oxlint-gate
@@ -33,6 +33,7 @@ oxlint-gate 是一个 OMP Marketplace Extension 插件，用于在代码编辑�
 - **可配置**：读取 `~/.config/oxlint/oxlintrc.json` 中的 ignorePatterns
 - **失败开放**：oxlint 未安装或崩溃时放行编辑
 - **本地日志**：写入 `~/.omp/logs/oxlint-gate.log`
+- **自动修复**：lint 失败时尝试自动修复，但需防止闭环循环
 
 ## 事件监听
 
@@ -64,6 +65,17 @@ oxlint-gate 是一个 OMP Marketplace Extension 插件，用于在代码编辑�
 **修复**：添加 `expandTilde()` 函数。
 
 ## 与 Claude Code hook 的区别
+## 自动修复与闭环防护
+
+oxlint-gate 支持 lint 失败后自动尝试修复。关键设计考虑：
+
+1. **stdout 过长处理**：oxlint 输出可能很长，需要截断或摘要后反馈给 LLM
+2. **闭环循环防护**：如果用户通过提示词要求忽略某个异常，lint+修复逻辑不应形成无限循环。防护策略包括：
+   - 记录已忽略的规则，避免重复触发修复
+   - 设置单次会话最大修复尝试次数
+   - 区分「用户主动忽略」和「未解决的违规」
+
+可通过 AGENTS.md 配置忽略特定规则（如 `no-explicit-any`），验证闭环防护是否生效。^[inferred]
 
 | 特性   | Claude Code hook      | OMP extension          |
 | ------ | --------------------- | ---------------------- |

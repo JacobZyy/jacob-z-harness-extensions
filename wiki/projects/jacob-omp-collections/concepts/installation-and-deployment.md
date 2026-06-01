@@ -20,7 +20,7 @@ updated: 2026-05-31T02:20:00Z
 
 # 安装与部署
 
-`install.sh` 是 jacob-omp-collections 的一键安装脚本，负责将仓库内容部署到本地 OMP 环境。
+`install.sh` 是 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] 的一键安装脚本，负责将仓库内容部署到本地 OMP 环境。
 
 ## 目标路径
 
