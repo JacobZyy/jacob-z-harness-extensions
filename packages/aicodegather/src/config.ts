@@ -5,7 +5,7 @@ import { createLogger } from './logger'
 
 const log = createLogger('config')
 
-export const VERSION = 'aicodegather-omp@1.6.0'
+export const VERSION = 'aicodegather-omp@1.6.1'
 
 /** Runtime config loaded from ~/.config/aicodegather.json */
 export interface AicodegatherConfig {

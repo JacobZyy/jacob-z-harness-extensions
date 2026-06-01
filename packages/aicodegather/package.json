@@ -1,7 +1,7 @@
 {
   "name": "@jacob-z/aicodegather",
   "type": "module",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "AI code edit tracking: captures diffs from Edit/Write tools and optionally reports to a configurable analytics endpoint",
   "author": { "name": "Jacob" },
   "license": "MIT",
