@@ -136,6 +136,79 @@ for p in d.get('plugins', []):
       echo "$plugins"
     fi
   fi
+
+  # 创建 node_modules symlink（不修改 package.json 或 lock 文件）
+  link_marketplace_plugins
+}
+
+# ── Link marketplace plugins to node_modules ──────────────────────────────────
+#
+# OMP's getEnabledPlugins() discovers extensions by reading package.json from
+# node_modules/<pkg>/package.json.  Marketplace-installed plugins live in
+# cache/plugins/<marketplace>/<name>/<version>/ but OMP needs them reachable
+# under node_modules/ too.  This creates pure symlinks — it does NOT touch
+# package.json dependencies or omp-plugins.lock.json.
+
+link_marketplace_plugins() {
+  local plugins_dir="$HOME/.omp/plugins"
+  local node_modules_dir="$plugins_dir/node_modules"
+  local installed_json="$plugins_dir/installed_plugins.json"
+
+  if [ ! -f "$installed_json" ]; then
+    return
+  fi
+
+  if ! command -v python3 &>/dev/null; then
+    warn "  python3 不可用，跳过 marketplace plugin linking"
+    return
+  fi
+
+  python3 << 'PYEOF'
+import json
+import os
+
+installed_json = os.path.expanduser("~/.omp/plugins/installed_plugins.json")
+node_modules_dir = os.path.expanduser("~/.omp/plugins/node_modules")
+
+with open(installed_json) as f:
+    data = json.load(f)
+
+plugins = data.get("plugins", {})
+created = 0
+
+for plugin_id, versions in plugins.items():
+    if not versions:
+        continue
+
+    latest = versions[-1]
+    install_path = latest.get("installPath", "")
+
+    if not install_path or not os.path.exists(install_path):
+        continue
+
+    parts = plugin_id.split("@")
+    if len(parts) != 2:
+        continue
+
+    name, scope = parts
+    scope_dir = os.path.join(node_modules_dir, f"@{scope}")
+    symlink_path = os.path.join(scope_dir, name)
+
+    if os.path.islink(symlink_path):
+        if os.readlink(symlink_path) == install_path:
+            continue
+        os.remove(symlink_path)
+    elif os.path.exists(symlink_path):
+        continue
+
+    os.makedirs(scope_dir, exist_ok=True)
+    os.symlink(install_path, symlink_path)
+    print(f"  ✓ linked {plugin_id} → node_modules/@{scope}/{name}")
+    created += 1
+
+if created:
+    print(f"  Linked {created} marketplace plugin(s)")
+PYEOF
 }
 
 
