@@ -1,10 +1,14 @@
 # jacob-z
 
-OMP plugin collection for [Oh My Pi](https://github.com/nichochar/oh-my-pi).
+OMP plugin collection for [Oh My Pi](https://github.com/can1357/oh-my-pi).
 
-## Plugins
+## 两条分发轨道
 
-### aicodegather
+### Extension 轨道（npm）
+
+通过 `omp install` 安装，走 npm publish。
+
+#### aicodegather
 
 AI code edit tracking extension. Captures diffs from Edit/Write tools and optionally reports to an analytics endpoint.
 
@@ -19,29 +23,27 @@ AI code edit tracking extension. Captures diffs from Edit/Write tools and option
 
 When no config file exists (or URLs are omitted), the extension runs silently — no network requests are made, only local logging.
 
-### oxlint-gate
+#### oxlint-gate
 
 Real-time type assertion gate using oxlint. Blocks `as any` and other type-unsafe patterns before files are saved. Pure local tool, no network requests.
 
-## Installation
+#### 安装
 
 ```bash
-# In OMP session:
 omp install @jacob-z/aicodegather
 omp install @jacob-z/oxlint-gate
 ```
 
-Or via marketplace (also available):
+### Marketplace 轨道
 
-```
+共享的 skills、hooks、MCP 配置，通过 marketplace 分发。
+
+```bash
 /marketplace add JacobZyy/jacob-omp-collections
-/marketplace install aicodegather@jacob-omp-collections
-/marketplace install oxlint-gate@jacob-omp-collections
+/marketplace install marketplace-share@jacob-omp-collections
 ```
 
-> **Note**: Extension plugins installed via marketplace also need a symlink in `~/.omp/plugins/node_modules/@jacob-z/` pointing to the cache directory. The `omp install` method handles this automatically.
-
-## Releasing a New Version
+## Releasing a New Version（Extension 轨道）
 
 1. Update `packages/<plugin>/package.json` `version` field
 2. Commit: `git commit -m "chore: release <plugin>@<version>"`

@@ -3,21 +3,14 @@
   "owner": {
     "name": "Jacob"
   },
-  "description": "Jacob's OMP plugin collection — AI code tracking, reporting, and more",
+  "description": "Jacob's OMP marketplace share — skills, hooks, and MCP configurations",
   "plugins": [
     {
-      "name": "aicodegather",
-      "description": "AI code edit tracking: captures diffs from Edit/Write tools and reports to internal analytics",
-      "source": "./packages/aicodegather",
+      "name": "marketplace-share",
+      "description": "Shared marketplace content: skills, hooks, and MCP server configurations for OMP",
+      "source": "./packages/marketplace-share",
       "category": "development",
-      "tags": ["analytics", "code-tracking"]
-    },
-    {
-      "name": "oxlint-gate",
-      "description": "Real-time type assertion gate using oxlint — blocks `as any` and other type laziness before files are saved",
-      "source": "./packages/oxlint-gate",
-      "category": "development",
-      "tags": ["lint", "oxlint", "typescript", "type-safety"]
+      "tags": ["marketplace", "skills", "hooks", "mcp"]
     }
   ]
 }
