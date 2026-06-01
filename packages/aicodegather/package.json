@@ -2,18 +2,21 @@
   "name": "@jacob-z/aicodegather",
   "type": "module",
   "version": "1.6.0",
+  "description": "AI code edit tracking: captures diffs from Edit/Write tools and optionally reports to a configurable analytics endpoint",
+  "author": { "name": "Jacob" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/JacobZyy/jacob-omp-collections", "directory": "packages/aicodegather" },
   "omp": {
     "extensions": ["./src/index.ts"]
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./src/index.ts"
     }
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "main": "./src/index.ts",
+  "files": ["src"],
   "scripts": {
     "build": "tsc --build",
     "test": "vitest run",

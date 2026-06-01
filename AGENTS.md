@@ -2,32 +2,34 @@
 
 ## 项目结构
 
-OMP marketplace 插件集合。所有插件通过 marketplace 分发。
+OMP 插件集合。插件通过 npm（`omp install`）或 marketplace 分发。
 
 ```
-:jacob-z/
+jacob-omp-collections/
   .claude-plugin/
     marketplace.json          ← Marketplace 索引
   packages/
     aicodegather/             ← Extension 插件（AI code edit tracking）
-      package.json            ← 必须包含 omp.extensions 字段
+      package.json            ← name: @jacob-z/aicodegather, omp.extensions
       src/index.ts            ← Extension 入口
     oxlint-gate/              ← Extension 插件（type assertion gate）
-      package.json
+      package.json            ← name: @jacob-z/oxlint-gate, omp.extensions
       src/index.ts
 ```
 
 ## 安装
 
 ```bash
-:/marketplace add JacobZyy/jacob-omp-collections
-:/marketplace install aicodegather@jacob-z
-:/marketplace install oxlint-gate@jacob-z
+# 方式 1：npm install（推荐，自动处理 node_modules）
+omp install @jacob-z/aicodegather
+omp install @jacob-z/oxlint-gate
+
+# 方式 2：marketplace install（需要手动 symlink）
+/marketplace add JacobZyy/jacob-omp-collections
+/marketplace install aicodegather@jacob-omp-collections
 ```
 
-:Extension 插件安装后需要在 `~/.omp/plugins/node_modules/@jacob-z/` 创建 symlink 指向 cache 目录。
-
-## 添加 Marketplace 插件
+## 添加插件
 
 1. 在 `packages/` 下新建目录
 2. 编写 `src/index.ts` 入口
@@ -35,8 +37,9 @@ OMP marketplace 插件集合。所有插件通过 marketplace 分发。
 
 ```json
 {
-:  "name": "@jacob-z/<plugin-name>",
-  "omp": { "extensions": ["./src/index.ts"] }
+  "name": "@jacob-z/<plugin-name>",
+  "omp": { "extensions": ["./src/index.ts"] },
+  "files": ["src"]
 }
 ```
 
@@ -50,7 +53,15 @@ OMP marketplace 插件集合。所有插件通过 marketplace 分发。
 }
 ```
 
-:5. 提交推送 → 用户 `/marketplace update jacob-omp-collections`
+5. 提交推送 + `npm publish`
+
+## 发布流程
+
+1. 更新 `packages/<plugin>/package.json` 的 `version`
+2. `bunx vitest run` 确保测试通过
+3. `git add -A && git commit -m "chore: release <plugin>@<version>" && git push`
+4. `cd packages/<plugin> && npm publish --access public`
+5. 用户端：`omp install @jacob-z/<plugin>@<version>`
 
 ## OMP Extension API
 
@@ -69,6 +80,7 @@ export default function myPlugin(pi: ExtensionAPI) {
 - 不要修改 `.claude-plugin/marketplace.json` 的顶层结构（name、owner）
 - 不要在 `packages/` 下放非插件内容
 - Extension 插件通过 `omp.extensions` 字段注册，不是 skills/hooks/commands
+- npm publish 时需要代理：`export https_proxy=http://127.0.0.1:7890`
 
 ## 开发校验
 

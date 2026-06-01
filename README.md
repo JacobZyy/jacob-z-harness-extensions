@@ -1,6 +1,6 @@
 # jacob-z
 
-OMP marketplace plugin collection for [Oh My Pi](https://github.com/nichochar/oh-my-pi).
+OMP plugin collection for [Oh My Pi](https://github.com/nichochar/oh-my-pi).
 
 ## Plugins
 
@@ -26,28 +26,28 @@ Real-time type assertion gate using oxlint. Blocks `as any` and other type-unsaf
 ## Installation
 
 ```bash
-# Add marketplace (one-time)
-:/marketplace add JacobZyy/jacob-omp-collections
-
-# Install a plugin
-:/marketplace install aicodegather@jacob-z
-:/marketplace install oxlint-gate@jacob-z
+# In OMP session:
+omp install @jacob-z/aicodegather
+omp install @jacob-z/oxlint-gate
 ```
 
-Extension plugins also require a symlink in `~/.omp/plugins/node_modules/`:
+Or via marketplace (also available):
 
-```bash
-# After marketplace install, create symlink manually:
-# (replace <version> and <cache-path> with actual values from ~/.omp/plugins/cache/)
-:ln -s <cache-path> ~/.omp/plugins/node_modules/@jacob-z/<plugin-name>
 ```
+/marketplace add JacobZyy/jacob-omp-collections
+/marketplace install aicodegather@jacob-omp-collections
+/marketplace install oxlint-gate@jacob-omp-collections
+```
+
+> **Note**: Extension plugins installed via marketplace also need a symlink in `~/.omp/plugins/node_modules/@jacob-z/` pointing to the cache directory. The `omp install` method handles this automatically.
 
 ## Releasing a New Version
 
 1. Update `packages/<plugin>/package.json` `version` field
-2. Commit: `git commit -m "release: <plugin>@<version>"`
+2. Commit: `git commit -m "chore: release <plugin>@<version>"`
 3. Push: `git push`
-:4. In OMP session: `/marketplace update jacob-omp-collections` then `omp plugin upgrade <name>@jacob-z`
+4. Publish: `cd packages/<plugin> && npm publish --access public`
+5. In OMP session: `omp install @jacob-z/<plugin>@<version>`
 
 ## Development
 
