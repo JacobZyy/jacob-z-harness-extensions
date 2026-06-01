@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "stats": {
+    "total_sources_ingested": 10,
+    "total_pages": 10,
+    "last_ingest": "2026-05-31T06:00:00Z"
+  },
+  "sources": {
+    "AGENTS.md": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 3430,
+      "modified_at": "2026-05-29T16:41:21Z",
+      "content_hash": "sha256:1da028ebb96b0b9ca58072c9e9dc2c60ccc9aed51299fc292b8c4f7d3f58f947",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/jacob-omp-collections.md",
+        "projects/jacob-omp-collections/concepts/repo-structure.md",
+        "projects/jacob-omp-collections/concepts/installation-and-deployment.md",
+        "projects/jacob-omp-collections/concepts/plugin-architecture.md",
+        "projects/jacob-omp-collections/skills/adding-a-plugin.md",
+        "projects/jacob-omp-collections/skills/adding-skills-and-mcp.md",
+        "projects/jacob-omp-collections/references/agents-doc.md"
+      ],
+      "pages_updated": []
+    },
+    "README.md": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 24,
+      "modified_at": "2026-05-29T12:12:53Z",
+      "content_hash": "sha256:ce8768005210bf6bb1423753ac75ce19406091eff488eee77ca4a9a4f9a5a045",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [],
+      "pages_updated": []
+    },
+    "install.sh": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 9024,
+      "modified_at": "2026-05-31T05:30:00Z",
+      "content_hash": "sha256:00f4092b4ad4d1e6d1676a817dc75b755057ce9e65ec680f916948719e466802",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/concepts/installation-and-deployment.md"
+      ],
+      "pages_updated": [
+        "projects/jacob-omp-collections/skills/aicodegather-troubleshooting.md"
+      ]
+    },
+    ".claude-plugin/marketplace.json": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 782,
+      "modified_at": "2026-05-30T17:24:41Z",
+      "content_hash": "sha256:d8fae71684cbfac0bc56f1df2224783090e5047c9edc088a7524d7143177a2b8",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [],
+      "pages_updated": []
+    },
+    "mcp/mcp.json": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 23,
+      "modified_at": "2026-05-29T14:18:51Z",
+      "content_hash": "sha256:d8e397af03b5b032f21d0aa967086f0c78b33c87b76f2e9898ae0a144df7de02",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [],
+      "pages_updated": []
+    },
+    "package.json": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 718,
+      "modified_at": "2026-05-29T18:43:59Z",
+      "content_hash": "sha256:ba5e108a3b6ab5750f23ba6450df3573285290ddcde0beaf80cc147a2ecef832",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [],
+      "pages_updated": []
+    },
+    "packages/aicodegather/src/index.ts": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 6316,
+      "modified_at": "2026-05-29T18:27:47Z",
+      "content_hash": "sha256:3e7c67f44152060a8e495d32a96459d7c3cb187b9ed643917927715e719e0e4c",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/entities/aicodegather.md"
+      ],
+      "pages_updated": [
+        "projects/jacob-omp-collections/entities/aicodegather.md"
+      ]
+    },
+    "packages/oxlint-gate/src/index.ts": {
+      "ingested_at": "2026-05-31T02:20:00Z",
+      "size_bytes": 8433,
+      "modified_at": "2026-05-31T02:09:06Z",
+      "content_hash": "sha256:47e24a40b0dcad1a05cbf7e81e72dbc77a82feec21dd2855ece3b0a2dba7b3f8",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/entities/oxlint-gate.md"
+      ],
+      "pages_updated": [
+        "projects/jacob-omp-collections/entities/oxlint-gate.md"
+      ]
+    },
+    "packages/aicodegather/TROUBLESHOOTING.md": {
+      "ingested_at": "2026-05-31T02:30:00Z",
+      "source_type": "document",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/skills/aicodegather-troubleshooting.md"
+      ],
+      "pages_updated": [
+        "projects/jacob-omp-collections/skills/aicodegather-troubleshooting.md"
+      ]
+    },
+    "omp-sessions-may29": {
+      "ingested_at": "2026-05-31T02:30:00Z",
+      "source_type": "session_transcript",
+      "project": "jacob-omp-collections",
+      "pages_created": [
+        "projects/jacob-omp-collections/concepts/marketplace-system.md",
+        "projects/jacob-omp-collections/skills/aicodegather-troubleshooting.md"
+      ],
+      "pages_updated": [
+        "projects/jacob-omp-collections/jacob-omp-collections.md",
+        "projects/jacob-omp-collections/entities/aicodegather.md"
+      ]
+    }
+  }
+}
