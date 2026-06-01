@@ -4,5 +4,5 @@ export default antfu({
   type: 'lib',
   typescript: true,
   formatters: true,
-  ignores: ['**/dist'],
+  ignores: ['**/dist', '**/*.md'],
 })

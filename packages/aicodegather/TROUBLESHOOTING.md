@@ -170,12 +170,12 @@ v1.3.0 的 `pi.on` 类型签名是内联的交叉类型。但 TypeScript 类型�
 1. **修复 symlink 和 package.json**：
    ```bash
    # 修复 symlink 指向实际存在的 1.5.0 缓存
-   ln -sf ~/.omp/plugins/cache/plugins/jacob-omp-collections___aicodegather___1.5.0 \
-          ~/.omp/plugins/node_modules/@jacob-omp-collections/aicodegather
+   ln -sf ~/.omp/plugins/cache/plugins/jacob-z___aicodegather___1.5.0 \
+          ~/.omp/plugins/node_modules/@jacob-z/aicodegather
 
    # 更新 package.json 使版本一致
    cat > ~/.omp/plugins/package.json << 'EOF'
-   {"name":"omp-plugins","private":true,"dependencies":{"dir-entry-plugin":"1.0.0","@jacob-omp-collections/aicodegather":"1.5.0"}}
+   {"name":"omp-plugins","private":true,"dependencies":{"dir-entry-plugin":"1.0.0","@jacob-z/aicodegather":"1.5.0"}}
    EOF
    ```
 

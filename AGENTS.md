@@ -5,7 +5,7 @@
 OMP marketplace 插件集合。所有插件通过 marketplace 分发。
 
 ```
-jacob-omp-collections/
+:jacob-z/
   .claude-plugin/
     marketplace.json          ← Marketplace 索引
   packages/
@@ -20,12 +20,12 @@ jacob-omp-collections/
 ## 安装
 
 ```bash
-/marketplace add JacobZyy/jacob-omp-collections
-/marketplace install aicodegather@jacob-omp-collections
-/marketplace install oxlint-gate@jacob-omp-collections
+:/marketplace add JacobZyy/jacob-omp-collections
+:/marketplace install aicodegather@jacob-z
+:/marketplace install oxlint-gate@jacob-z
 ```
 
-Extension 插件安装后需要在 `~/.omp/plugins/node_modules/@jacob-omp-collections/` 创建 symlink 指向 cache 目录。
+:Extension 插件安装后需要在 `~/.omp/plugins/node_modules/@jacob-z/` 创建 symlink 指向 cache 目录。
 
 ## 添加 Marketplace 插件
 
@@ -35,7 +35,7 @@ Extension 插件安装后需要在 `~/.omp/plugins/node_modules/@jacob-omp-colle
 
 ```json
 {
-  "name": "@jacob-omp-collections/<plugin-name>",
+:  "name": "@jacob-z/<plugin-name>",
   "omp": { "extensions": ["./src/index.ts"] }
 }
 ```
@@ -50,7 +50,7 @@ Extension 插件安装后需要在 `~/.omp/plugins/node_modules/@jacob-omp-colle
 }
 ```
 
-5. 提交推送 → 用户 `/marketplace update jacob-omp-collections`
+:5. 提交推送 → 用户 `/marketplace update jacob-omp-collections`
 
 ## OMP Extension API
 

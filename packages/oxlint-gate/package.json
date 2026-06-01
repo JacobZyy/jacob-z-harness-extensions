@@ -1,5 +1,5 @@
 {
-  "name": "@jacob-omp-collections/oxlint-gate",
+  "name": "@jacob-z/oxlint-gate",
   "type": "module",
   "version": "1.0.0",
   "description": "Real-time type assertion gate using oxlint — blocks `as any` and other type laziness before files are saved",

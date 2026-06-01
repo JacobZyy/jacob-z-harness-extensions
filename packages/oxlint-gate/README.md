@@ -36,7 +36,7 @@ Intercepts Edit/Write tool calls and checks the target file with oxlint before a
 ### Via OMP marketplace
 
 ```bash
-omp plugin install @jacob-omp-collections/oxlint-gate
+omp plugin install @jacob-z/oxlint-gate
 ```
 
 ### Manual installation
@@ -50,7 +50,7 @@ omp plugin install @jacob-omp-collections/oxlint-gate
 3. Add to your OMP config (`~/.omp/agent/config.yml`):
    ```yaml
    extensions:
-     - /path/to/jacob-omp-collections/packages/oxlint-gate/src/index.ts
+    - /path/to/jacob-z/packages/oxlint-gate/src/index.ts
    ```
 
 ## How it works

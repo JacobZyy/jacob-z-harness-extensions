@@ -1,4 +1,4 @@
-# jacob-omp-collections
+# jacob-z
 
 OMP marketplace plugin collection for [Oh My Pi](https://github.com/nichochar/oh-my-pi).
 
@@ -27,11 +27,11 @@ Real-time type assertion gate using oxlint. Blocks `as any` and other type-unsaf
 
 ```bash
 # Add marketplace (one-time)
-/marketplace add JacobZyy/jacob-omp-collections
+:/marketplace add JacobZyy/jacob-omp-collections
 
 # Install a plugin
-/marketplace install aicodegather@jacob-omp-collections
-/marketplace install oxlint-gate@jacob-omp-collections
+:/marketplace install aicodegather@jacob-z
+:/marketplace install oxlint-gate@jacob-z
 ```
 
 Extension plugins also require a symlink in `~/.omp/plugins/node_modules/`:
@@ -39,7 +39,7 @@ Extension plugins also require a symlink in `~/.omp/plugins/node_modules/`:
 ```bash
 # After marketplace install, create symlink manually:
 # (replace <version> and <cache-path> with actual values from ~/.omp/plugins/cache/)
-ln -s <cache-path> ~/.omp/plugins/node_modules/@jacob-omp-collections/<plugin-name>
+:ln -s <cache-path> ~/.omp/plugins/node_modules/@jacob-z/<plugin-name>
 ```
 
 ## Releasing a New Version
@@ -47,7 +47,7 @@ ln -s <cache-path> ~/.omp/plugins/node_modules/@jacob-omp-collections/<plugin-na
 1. Update `packages/<plugin>/package.json` `version` field
 2. Commit: `git commit -m "release: <plugin>@<version>"`
 3. Push: `git push`
-4. In OMP session: `/marketplace update jacob-omp-collections` then `omp plugin upgrade <name>@jacob-omp-collections`
+:4. In OMP session: `/marketplace update jacob-omp-collections` then `omp plugin upgrade <name>@jacob-z`
 
 ## Development
 
