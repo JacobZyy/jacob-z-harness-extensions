@@ -1,0 +1,330 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "exported_at": "2026-06-01T04:14:32.091685Z",
+    "vault": "/Users/jacobzha/Documents/workspace/jacob-open-source/jacob-omp-collections/wiki",
+    "total_nodes": 13,
+    "total_edges": 25
+  },
+  "nodes": [
+    {
+      "id": "hot",
+      "label": "Hot Cache",
+      "category": "",
+      "tags": [],
+      "summary": "",
+      "community": null
+    },
+    {
+      "id": "projects/jacob-omp-collections/jacob-omp-collections",
+      "label": "jacob-omp-collections",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "marketplace",
+        "plugins",
+        "skills",
+        "mcp"
+      ],
+      "summary": "\u96c6\u4e2d\u7ba1\u7406 OMP \u63d2\u4ef6\u3001Skills\u3001MCP \u914d\u7f6e\u7684 monorepo\uff0c\u901a\u8fc7 install.sh \u4e00\u952e\u5b89\u88c5\u5230\u672c\u5730\u73af\u5883\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/references/agents-doc",
+      "label": "AGENTS.md \u53c2\u8003",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "documentation",
+        "reference"
+      ],
+      "summary": "[[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u9879\u76ee\u6587\u6863 AGENTS.md \u7684\u5b8c\u6574\u5185\u5bb9\u6458\u8981\uff0c\u5305\u62ec\u9879\u76ee\u7ed3\u6784\u3001\u5b89\u88c5\u548c\u64cd\u4f5c\u6307\u5357\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "label": "OMP Extension \u67b6\u6784",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "extension-api",
+        "architecture"
+      ],
+      "summary": "OMP Extension API \u7684\u67b6\u6784\u8bbe\u8ba1\u4e0e\u4e8b\u4ef6\u6a21\u578b\u2014\u2014ExtensionFactory\u3001\u4e8b\u4ef6\u94a9\u5b50\u4e0e\u751f\u547d\u5468\u671f\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/concepts/installation-and-deployment",
+      "label": "\u5b89\u88c5\u4e0e\u90e8\u7f72",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "install",
+        "deployment",
+        "symlink",
+        "merge"
+      ],
+      "summary": "install.sh \u5b89\u88c5\u811a\u672c\u7684\u5b8c\u6574\u5de5\u4f5c\u6d41\u7a0b\u2014\u2014Skills symlink\u3001MCP merge\u3001Marketplace \u63d2\u4ef6\u624b\u52a8\u5b89\u88c5\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/concepts/marketplace-system",
+      "label": "OMP Marketplace \u7cfb\u7edf",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "marketplace",
+        "plugin-system",
+        "publishing"
+      ],
+      "summary": "OMP Marketplace \u7684\u5b8c\u6574\u5de5\u4f5c\u6d41\u2014\u2014\u63d2\u4ef6\u7d22\u5f15\u3001\u5b89\u88c5\u3001\u66f4\u65b0\u3001dev \u6a21\u5f0f\u4e0e\u5378\u8f7d\u673a\u5236\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/concepts/repo-structure",
+      "label": "\u4ed3\u5e93\u7ed3\u6784",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "repo-structure",
+        "conventions"
+      ],
+      "summary": "[[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u7684\u76ee\u5f55\u7ec4\u7ec7\u89c4\u8303\uff0c\u6bcf\u4e2a\u9876\u5c42\u76ee\u5f55\u7684\u804c\u8d23\u4e0e\u7ea6\u675f\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/skills/adding-a-plugin",
+      "label": "\u6dfb\u52a0 Marketplace \u63d2\u4ef6",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "marketplace",
+        "plugin",
+        "howto"
+      ],
+      "summary": "\u5728 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u4e2d\u6dfb\u52a0\u65b0\u7684 Marketplace \u63d2\u4ef6\uff08extensions/tools/hooks/commands\uff09\u7684\u5b8c\u6574\u6b65\u9aa4\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/skills/adding-skills-and-mcp",
+      "label": "\u6dfb\u52a0 Skills \u548c MCP",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "skills",
+        "mcp",
+        "howto"
+      ],
+      "summary": "\u5728 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u4e2d\u6dfb\u52a0 OMP Skill \u548c MCP Server \u7684\u6b65\u9aa4\u4e0e\u89c4\u8303\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/skills/plugin-config-debugging",
+      "label": "OMP \u63d2\u4ef6\u914d\u7f6e\u8c03\u8bd5",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "plugin",
+        "debugging",
+        "configuration",
+        "troubleshooting"
+      ],
+      "summary": "OMP \u63d2\u4ef6\u914d\u7f6e\u5e38\u89c1\u95ee\u9898\u6392\u67e5\uff1alock \u6587\u4ef6\u7f3a\u5931\u3001key \u4e0d\u5339\u914d\u3001marketplace \u4e0e npm \u63d2\u4ef6\u51b2\u7a81\u3002",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/skills/aicodegather-troubleshooting",
+      "label": "aicodegather \u6392\u67e5\u8bb0\u5f55",
+      "category": "projects",
+      "tags": [
+        "aicodegather",
+        "debugging",
+        "omp",
+        "troubleshooting",
+        "oxlint-gate"
+      ],
+      "summary": ">-",
+      "community": 1
+    },
+    {
+      "id": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "label": "oxlint-gate",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "extension",
+        "lint",
+        "type-safety",
+        "oxlint"
+      ],
+      "summary": ">-",
+      "community": 0
+    },
+    {
+      "id": "projects/jacob-omp-collections/entities/aicodegather",
+      "label": "aicodegather",
+      "category": "projects",
+      "tags": [
+        "omp",
+        "extension",
+        "analytics",
+        "code-tracking"
+      ],
+      "summary": "OMP Extension \u63d2\u4ef6\uff0c\u6355\u83b7 AI \u7f16\u8f91/\u5199\u5165\u5de5\u5177\u7684\u4ee3\u7801 diff \u5e76\u4e0a\u62a5\u5230\u5185\u90e8\u5206\u6790\u7cfb\u7edf\u3002\u4ece Claude Code hooks \u8fc1\u79fb\u81f3 OMP Extension API\u3002",
+      "community": 0
+    }
+  ],
+  "links": [
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/concepts/installation-and-deployment",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/concepts/repo-structure",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/concepts/marketplace-system",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/entities/aicodegather",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/skills/adding-a-plugin",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/skills/adding-skills-and-mcp",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/skills/aicodegather-troubleshooting",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/jacob-omp-collections",
+      "target": "projects/jacob-omp-collections/references/agents-doc",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "target": "projects/jacob-omp-collections/entities/aicodegather",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "target": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/concepts/installation-and-deployment",
+      "target": "projects/jacob-omp-collections/jacob-omp-collections",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/concepts/marketplace-system",
+      "target": "projects/jacob-omp-collections/entities/aicodegather",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/concepts/marketplace-system",
+      "target": "projects/jacob-omp-collections/skills/plugin-config-debugging",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/skills/plugin-config-debugging",
+      "target": "projects/jacob-omp-collections/entities/aicodegather",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/skills/plugin-config-debugging",
+      "target": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/skills/plugin-config-debugging",
+      "target": "projects/jacob-omp-collections/concepts/marketplace-system",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/skills/plugin-config-debugging",
+      "target": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "target": "projects/jacob-omp-collections/entities/aicodegather",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "target": "projects/jacob-omp-collections/skills/aicodegather-troubleshooting",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "target": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/entities/aicodegather",
+      "target": "projects/jacob-omp-collections/entities/oxlint-gate",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/entities/aicodegather",
+      "target": "projects/jacob-omp-collections/concepts/plugin-architecture",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "projects/jacob-omp-collections/entities/aicodegather",
+      "target": "projects/jacob-omp-collections/skills/aicodegather-troubleshooting",
+      "relation": "wikilink",
+      "confidence": "EXTRACTED"
+    }
+  ]
+}

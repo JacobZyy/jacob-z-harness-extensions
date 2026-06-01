@@ -33,8 +33,8 @@ describe('diff', () => {
 
     it('returns full new content for very large files (fallback)', () => {
       // m * n > 5_000_000 threshold
-      const oldLines = Array(3000).fill('a')
-      const newLines = Array(3000).fill('b')
+      const oldLines = Array.from({ length: 3000 }).fill('a')
+      const newLines = Array.from({ length: 3000 }).fill('b')
       const diff = computeDiff(oldLines.join('\n'), newLines.join('\n'))
       // Falls back to returning full new content
       expect(diff).toBeTruthy()

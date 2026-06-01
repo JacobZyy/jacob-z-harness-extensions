@@ -1,0 +1,447 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Wiki Knowledge Graph</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #0f0f1a;
+        color: #e0e0e0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        display: flex;
+        height: 100vh;
+      }
+      #graph {
+        flex: 1;
+      }
+      #sidebar {
+        width: 260px;
+        background: #1a1a2e;
+        border-left: 1px solid #2a2a4e;
+        padding: 14px;
+        overflow-y: auto;
+        font-size: 13px;
+      }
+      #sidebar h3 {
+        color: #aaa;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 10px;
+      }
+      #info {
+        margin-bottom: 16px;
+        line-height: 1.6;
+        color: #ccc;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 0;
+        font-size: 12px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      #stats {
+        margin-top: 16px;
+        color: #555;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="graph"></div>
+    <div id="sidebar">
+      <h3>Wiki Knowledge Graph</h3>
+      <div id="info">Click a node to see details.</div>
+      <h3 style="margin-top: 12px">Communities</h3>
+      <div id="legend"></div>
+      <div id="stats"></div>
+    </div>
+    <script>
+      const NODES_DATA = [
+        { id: 'hot', label: 'Hot Cache', color: { background: '#BAB0AC' }, size: 8, title: '', community: null },
+        {
+          id: 'projects/jacob-omp-collections/jacob-omp-collections',
+          label: 'jacob-omp-collections',
+          color: { background: '#4E79A7' },
+          size: 41,
+          title:
+            'projects | #omp #marketplace #plugins #skills #mcp\n\u96c6\u4e2d\u7ba1\u7406 OMP \u63d2\u4ef6\u3001Skills\u3001MCP \u914d\u7f6e\u7684 monorepo\uff0c\u901a\u8fc7 install.sh \u4e00\u952e\u5b89\u88c5\u5230\u672c\u5730\u73af\u5883\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/references/agents-doc',
+          label: 'AGENTS.md \u53c2\u8003',
+          color: { background: '#4E79A7' },
+          size: 11,
+          title:
+            'projects | #omp #documentation #reference\n[[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u9879\u76ee\u6587\u6863 AGENTS.md \u7684\u5b8c\u6574\u5185\u5bb9\u6458\u8981\uff0c\u5305\u62ec\u9879\u76ee\u7ed3\u6784\u3001\u5b89\u88c5\u548c\u64cd\u4f5c\u6307\u5357\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          label: 'OMP Extension \u67b6\u6784',
+          color: { background: '#4E79A7' },
+          size: 26,
+          title:
+            'projects | #omp #extension-api #architecture\nOMP Extension API \u7684\u67b6\u6784\u8bbe\u8ba1\u4e0e\u4e8b\u4ef6\u6a21\u578b\u2014\u2014ExtensionFactory\u3001\u4e8b\u4ef6\u94a9\u5b50\u4e0e\u751f\u547d\u5468\u671f\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/concepts/installation-and-deployment',
+          label: '\u5b89\u88c5\u4e0e\u90e8\u7f72',
+          color: { background: '#4E79A7' },
+          size: 14,
+          title:
+            'projects | #omp #install #deployment #symlink #merge\ninstall.sh \u5b89\u88c5\u811a\u672c\u7684\u5b8c\u6574\u5de5\u4f5c\u6d41\u7a0b\u2014\u2014Skills symlink\u3001MCP merge\u3001Marketplace \u63d2\u4ef6\u624b\u52a8\u5b89\u88c5\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/concepts/marketplace-system',
+          label: 'OMP Marketplace \u7cfb\u7edf',
+          color: { background: '#4E79A7' },
+          size: 20,
+          title:
+            'projects | #omp #marketplace #plugin-system #publishing\nOMP Marketplace \u7684\u5b8c\u6574\u5de5\u4f5c\u6d41\u2014\u2014\u63d2\u4ef6\u7d22\u5f15\u3001\u5b89\u88c5\u3001\u66f4\u65b0\u3001dev \u6a21\u5f0f\u4e0e\u5378\u8f7d\u673a\u5236\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/concepts/repo-structure',
+          label: '\u4ed3\u5e93\u7ed3\u6784',
+          color: { background: '#4E79A7' },
+          size: 11,
+          title:
+            'projects | #omp #repo-structure #conventions\n[[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u7684\u76ee\u5f55\u7ec4\u7ec7\u89c4\u8303\uff0c\u6bcf\u4e2a\u9876\u5c42\u76ee\u5f55\u7684\u804c\u8d23\u4e0e\u7ea6\u675f\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/skills/adding-a-plugin',
+          label: '\u6dfb\u52a0 Marketplace \u63d2\u4ef6',
+          color: { background: '#4E79A7' },
+          size: 11,
+          title:
+            'projects | #omp #marketplace #plugin #howto\n\u5728 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u4e2d\u6dfb\u52a0\u65b0\u7684 Marketplace \u63d2\u4ef6\uff08extensions/tools/hooks/commands\uff09\u7684\u5b8c\u6574\u6b65\u9aa4\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/skills/adding-skills-and-mcp',
+          label: '\u6dfb\u52a0 Skills \u548c MCP',
+          color: { background: '#4E79A7' },
+          size: 11,
+          title:
+            'projects | #omp #skills #mcp #howto\n\u5728 [[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]] \u4e2d\u6dfb\u52a0 OMP Skill \u548c MCP Server \u7684\u6b65\u9aa4\u4e0e\u89c4\u8303\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/skills/plugin-config-debugging',
+          label: 'OMP \u63d2\u4ef6\u914d\u7f6e\u8c03\u8bd5',
+          color: { background: '#4E79A7' },
+          size: 23,
+          title:
+            'projects | #omp #plugin #debugging #configuration #troubleshooting\nOMP \u63d2\u4ef6\u914d\u7f6e\u5e38\u89c1\u95ee\u9898\u6392\u67e5\uff1alock \u6587\u4ef6\u7f3a\u5931\u3001key \u4e0d\u5339\u914d\u3001marketplace \u4e0e npm \u63d2\u4ef6\u51b2\u7a81\u3002',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/skills/aicodegather-troubleshooting',
+          label: 'aicodegather \u6392\u67e5\u8bb0\u5f55',
+          color: { background: '#F28E2B' },
+          size: 17,
+          title: 'projects | #aicodegather #debugging #omp #troubleshooting #oxlint-gate\n>-',
+          community: 1,
+        },
+        {
+          id: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          label: 'oxlint-gate',
+          color: { background: '#4E79A7' },
+          size: 29,
+          title: 'projects | #omp #extension #lint #type-safety #oxlint\n>-',
+          community: 0,
+        },
+        {
+          id: 'projects/jacob-omp-collections/entities/aicodegather',
+          label: 'aicodegather',
+          color: { background: '#4E79A7' },
+          size: 32,
+          title:
+            'projects | #omp #extension #analytics #code-tracking\nOMP Extension \u63d2\u4ef6\uff0c\u6355\u83b7 AI \u7f16\u8f91/\u5199\u5165\u5de5\u5177\u7684\u4ee3\u7801 diff \u5e76\u4e0a\u62a5\u5230\u5185\u90e8\u5206\u6790\u7cfb\u7edf\u3002\u4ece Claude Code hooks \u8fc1\u79fb\u81f3 OMP Extension API\u3002',
+          community: 0,
+        },
+      ]
+      const EDGES_DATA = [
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/concepts/installation-and-deployment',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/concepts/repo-structure',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/concepts/marketplace-system',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/entities/aicodegather',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/skills/adding-a-plugin',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/skills/adding-skills-and-mcp',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/skills/aicodegather-troubleshooting',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/jacob-omp-collections',
+          to: 'projects/jacob-omp-collections/references/agents-doc',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          to: 'projects/jacob-omp-collections/entities/aicodegather',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          to: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/concepts/installation-and-deployment',
+          to: 'projects/jacob-omp-collections/jacob-omp-collections',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/concepts/marketplace-system',
+          to: 'projects/jacob-omp-collections/entities/aicodegather',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/concepts/marketplace-system',
+          to: 'projects/jacob-omp-collections/skills/plugin-config-debugging',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/skills/plugin-config-debugging',
+          to: 'projects/jacob-omp-collections/entities/aicodegather',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/skills/plugin-config-debugging',
+          to: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/skills/plugin-config-debugging',
+          to: 'projects/jacob-omp-collections/concepts/marketplace-system',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/skills/plugin-config-debugging',
+          to: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          to: 'projects/jacob-omp-collections/entities/aicodegather',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          to: 'projects/jacob-omp-collections/skills/aicodegather-troubleshooting',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          to: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/entities/aicodegather',
+          to: 'projects/jacob-omp-collections/entities/oxlint-gate',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/entities/aicodegather',
+          to: 'projects/jacob-omp-collections/concepts/plugin-architecture',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+        {
+          from: 'projects/jacob-omp-collections/entities/aicodegather',
+          to: 'projects/jacob-omp-collections/skills/aicodegather-troubleshooting',
+          dashes: false,
+          width: 1,
+          color: { color: '#666', opacity: 0.6 },
+          title: 'wikilink',
+        },
+      ]
+      const COMMUNITY_COLORS = [
+        '#4E79A7',
+        '#F28E2B',
+        '#E15759',
+        '#76B7B2',
+        '#59A14F',
+        '#EDC948',
+        '#B07AA1',
+        '#FF9DA7',
+        '#9C755F',
+        '#BAB0AC',
+      ]
+      const nodes = new vis.DataSet(NODES_DATA)
+      const edges = new vis.DataSet(EDGES_DATA)
+      const network = new vis.Network(
+        document.getElementById('graph'),
+        { nodes, edges },
+        {
+          physics: {
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: { gravitationalConstant: -60, springLength: 120 },
+            stabilization: { iterations: 200 },
+          },
+          interaction: { hover: true, tooltipDelay: 100 },
+          nodes: { shape: 'dot', borderWidth: 1.5 },
+          edges: { smooth: { type: 'continuous' }, arrows: { to: { enabled: true, scaleFactor: 0.4 } } },
+        },
+      )
+      network.once('stabilizationIterationsDone', () => network.setOptions({ physics: { enabled: false } }))
+      network.on('click', ({ nodes: sel }) => {
+        if (!sel.length) return
+        const n = NODES_DATA.find((x) => x.id === sel[0])
+        if (!n) return
+        document.getElementById('info').innerHTML =
+          '<b>' +
+          n.label +
+          '</b><br>Category: ' +
+          (n.category || '—') +
+          '<br>Tags: ' +
+          (n.tags || '—') +
+          (n.summary ? '<br><br>' + n.summary : '')
+      })
+      const communities = {}
+      NODES_DATA.forEach((n) => {
+        if (n.community != null) communities[n.community] = (communities[n.community] || 0) + 1
+      })
+      const leg = document.getElementById('legend')
+      Object.entries(communities)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([cid, count]) => {
+          const color = COMMUNITY_COLORS[cid % COMMUNITY_COLORS.length]
+          leg.innerHTML +=
+            '<div class="legend-item"><div class="dot" style="background:' +
+            color +
+            '"></div>Community ' +
+            cid +
+            ' (' +
+            count +
+            ')</div>'
+        })
+      document.getElementById('stats').textContent = NODES_DATA.length + ' pages · ' + EDGES_DATA.length + ' links'
+    </script>
+  </body>
+</html>

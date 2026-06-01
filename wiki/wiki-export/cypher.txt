@@ -1,0 +1,43 @@
+// Wiki knowledge graph export — 2026-06-01T04:14:32.091685Z
+
+// Nodes
+MERGE (n:Page {id: "hot"}) SET n.label = "Hot Cache", n.category = "", n.tags = [], n.community = null;
+MERGE (n:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}) SET n.label = "jacob-omp-collections", n.category = "projects", n.tags = ["omp","marketplace","plugins","skills","mcp"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/references/agents-doc"}) SET n.label = "AGENTS.md 参考", n.category = "projects", n.tags = ["omp","documentation","reference"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}) SET n.label = "OMP Extension 架构", n.category = "projects", n.tags = ["omp","extension-api","architecture"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/concepts/installation-and-deployment"}) SET n.label = "安装与部署", n.category = "projects", n.tags = ["omp","install","deployment","symlink","merge"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/concepts/marketplace-system"}) SET n.label = "OMP Marketplace 系统", n.category = "projects", n.tags = ["omp","marketplace","plugin-system","publishing"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/concepts/repo-structure"}) SET n.label = "仓库结构", n.category = "projects", n.tags = ["omp","repo-structure","conventions"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/skills/adding-a-plugin"}) SET n.label = "添加 Marketplace 插件", n.category = "projects", n.tags = ["omp","marketplace","plugin","howto"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/skills/adding-skills-and-mcp"}) SET n.label = "添加 Skills 和 MCP", n.category = "projects", n.tags = ["omp","skills","mcp","howto"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/skills/plugin-config-debugging"}) SET n.label = "OMP 插件配置调试", n.category = "projects", n.tags = ["omp","plugin","debugging","configuration","troubleshooting"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/skills/aicodegather-troubleshooting"}) SET n.label = "aicodegather 排查记录", n.category = "projects", n.tags = ["aicodegather","debugging","omp","troubleshooting","oxlint-gate"], n.community = 1;
+MERGE (n:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}) SET n.label = "oxlint-gate", n.category = "projects", n.tags = ["omp","extension","lint","type-safety","oxlint"], n.community = 0;
+MERGE (n:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}) SET n.label = "aicodegather", n.category = "projects", n.tags = ["omp","extension","analytics","code-tracking"], n.community = 0;
+
+// Relationships
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/concepts/installation-and-deployment"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/concepts/repo-structure"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/concepts/marketplace-system"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/skills/adding-a-plugin"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/skills/adding-skills-and-mcp"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/skills/aicodegather-troubleshooting"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}), (b:Page {id: "projects/jacob-omp-collections/references/agents-doc"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}), (b:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}), (b:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/concepts/installation-and-deployment"}), (b:Page {id: "projects/jacob-omp-collections/jacob-omp-collections"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/concepts/marketplace-system"}), (b:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/concepts/marketplace-system"}), (b:Page {id: "projects/jacob-omp-collections/skills/plugin-config-debugging"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/skills/plugin-config-debugging"}), (b:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/skills/plugin-config-debugging"}), (b:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/skills/plugin-config-debugging"}), (b:Page {id: "projects/jacob-omp-collections/concepts/marketplace-system"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/skills/plugin-config-debugging"}), (b:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}), (b:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}), (b:Page {id: "projects/jacob-omp-collections/skills/aicodegather-troubleshooting"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}), (b:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}), (b:Page {id: "projects/jacob-omp-collections/entities/oxlint-gate"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}), (b:Page {id: "projects/jacob-omp-collections/concepts/plugin-architecture"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);
+MATCH (a:Page {id: "projects/jacob-omp-collections/entities/aicodegather"}), (b:Page {id: "projects/jacob-omp-collections/skills/aicodegather-troubleshooting"}) MERGE (a)-[:WIKILINK {relation: "wikilink", confidence: "EXTRACTED"}]->(b);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { FileFilter } from './file-filter'
 
-describe('FileFilter', () => {
+describe('fileFilter', () => {
   describe('shouldProcess', () => {
     it('accepts .ts files', () => {
       expect(FileFilter.shouldProcess('/project/src/index.ts')).toBe(true)

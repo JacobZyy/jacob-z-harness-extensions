@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/graphml">
+  <key id="label" for="node" attr.name="label" attr.type="string"/>
+  <key id="category" for="node" attr.name="category" attr.type="string"/>
+  <key id="tags" for="node" attr.name="tags" attr.type="string"/>
+  <key id="community" for="node" attr.name="community" attr.type="int"/>
+  <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
+  <key id="confidence" for="edge" attr.name="confidence" attr.type="string"/>
+  <graph id="wiki" edgedefault="undirected">
+    <node id="hot">
+      <data key="label">Hot Cache</data>
+      <data key="category"></data>
+      <data key="tags"></data>
+    </node>
+    <node id="projects/jacob-omp-collections/jacob-omp-collections">
+      <data key="label">jacob-omp-collections</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, marketplace, plugins, skills, mcp</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/references/agents-doc">
+      <data key="label">AGENTS.md 参考</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, documentation, reference</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="label">OMP Extension 架构</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, extension-api, architecture</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="label">安装与部署</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, install, deployment, symlink, merge</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="label">OMP Marketplace 系统</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, marketplace, plugin-system, publishing</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/concepts/repo-structure">
+      <data key="label">仓库结构</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, repo-structure, conventions</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/skills/adding-a-plugin">
+      <data key="label">添加 Marketplace 插件</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, marketplace, plugin, howto</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/skills/adding-skills-and-mcp">
+      <data key="label">添加 Skills 和 MCP</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, skills, mcp, howto</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/skills/plugin-config-debugging">
+      <data key="label">OMP 插件配置调试</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, plugin, debugging, configuration, troubleshooting</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/skills/aicodegather-troubleshooting">
+      <data key="label">aicodegather 排查记录</data>
+      <data key="category">projects</data>
+      <data key="tags">aicodegather, debugging, omp, troubleshooting, oxlint-gate</data>
+      <data key="community">1</data>
+    </node>
+    <node id="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="label">oxlint-gate</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, extension, lint, type-safety, oxlint</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="label">aicodegather</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, extension, analytics, code-tracking</data>
+      <data key="community">0</data>
+    </node>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/concepts/repo-structure">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/skills/adding-a-plugin">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/skills/adding-skills-and-mcp">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/skills/aicodegather-troubleshooting">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/references/agents-doc">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/plugin-architecture" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/plugin-architecture" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/installation-and-deployment" target="projects/jacob-omp-collections/jacob-omp-collections">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-system" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-system" target="projects/jacob-omp-collections/skills/plugin-config-debugging">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/plugin-config-debugging" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/plugin-config-debugging" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/plugin-config-debugging" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/plugin-config-debugging" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/skills/aicodegather-troubleshooting">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/aicodegather" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/aicodegather" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/aicodegather" target="projects/jacob-omp-collections/skills/aicodegather-troubleshooting">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+  </graph>
+</graphml>
