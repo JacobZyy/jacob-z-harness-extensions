@@ -41,9 +41,6 @@ export function getGitRemoteUrl(cwd: string): string | null {
 
 /** 从 remote URL 提取 namespace（group/project） */
 export function getGitNamespace(remoteUrl: string): string {
-  // ssh://git@gitlab.zhuanspirit.com/group/project.git → group/project
-  // git@gitlab.zhuanspirit.com:group/project.git → group/project
-  // https://gitlab.zhuanspirit.com/group/project.git → group/project
   // Strategy: strip protocol, strip host, strip .git suffix
   let rest = remoteUrl
   // Remove protocol
@@ -52,7 +49,8 @@ export function getGitNamespace(remoteUrl: string): string {
   rest = rest.replace(/^[^@]+@/, '')
   // Remove host (everything up to : or /)
   const hostEnd = rest.search(/[:/]/)
-  if (hostEnd === -1) return 'unknown'
+  if (hostEnd === -1)
+    return 'unknown'
   rest = rest.slice(hostEnd + 1)
   // Remove .git suffix
   rest = rest.replace(/\.git$/, '')
@@ -61,7 +59,8 @@ export function getGitNamespace(remoteUrl: string): string {
 
 /** 根据 remote URL 判断环境 */
 export function getEnvType(remoteUrl: string): string {
-  if (remoteUrl.includes('gitlab.zhuanspirit.com'))
+  // Private git hosts are internal; everything else is external
+  if (remoteUrl.includes('gitlab.'))
     return 'internal'
   return 'external'
 }
