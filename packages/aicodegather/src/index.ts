@@ -58,27 +58,29 @@ export function extractFilePath(input: Record<string, unknown>): string | undefi
  * Only processes source files in git repos with a configured remote.
  */
 const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
-  console.error('[aicodegather] extension factory called, registering handlers...')
   log.info('aicodegather extension loaded')
+  pi.logger.info('[aicodegather] extension loaded')
 
   pi.on('session_start', async (_event, ctx) => {
-    console.error(`[aicodegather] session_start fired: cwd=${ctx.cwd}`)
     log.info('==================================================')
     log.info('session_start 开始执行')
     log.info(`session start: cwd=${ctx.cwd}`)
+    pi.logger.info(`[aicodegather] session_start: cwd=${ctx.cwd}`)
     await reportSessionStart(ctx.cwd)
     log.info('session_start 执行完成')
+    pi.logger.info('[aicodegather] session_start done')
   })
   pi.on('tool_call', async (event, ctx) => {
-    console.error(`[aicodegather] tool_call fired: toolName=${event.toolName}`)
     if (event.toolName !== 'edit' && event.toolName !== 'write')
       return
     log.info('==================================================')
     log.info('pre_edit 开始执行')
+    pi.logger.info(`[aicodegather] tool_call: toolName=${event.toolName}`)
 
     const extractedPath = extractFilePath(event.input)
     if (!extractedPath) {
       log.error(`未找到file_path, input keys=${Object.keys(event.input).join(',')}`)
+      pi.logger.warn(`[aicodegather] pre_edit: no file_path extracted, input keys=${Object.keys(event.input).join(',')}`)
       return
     }
     const filePath = isAbsolute(extractedPath) ? extractedPath : resolve(ctx.cwd, extractedPath)
@@ -91,12 +93,14 @@ const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
     log.debug(`Git远程URL: ${remoteUrl}`)
     if (!remoteUrl) {
       log.info(`跳过: 无远程仓库`)
+      pi.logger.info(`[aicodegather] pre_edit skip: no git remote for ${filePath}`)
       return
     }
 
     // 过滤文件
     if (!FileFilter.shouldProcess(filePath)) {
       log.info(`跳过: 文件不在过滤范围内, file_path=${filePath}`)
+      pi.logger.info(`[aicodegather] pre_edit skip: file filtered out, path=${filePath}`)
       return
     }
 
@@ -115,6 +119,7 @@ const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
     log.debug(`相对路径: ${relativePath}`)
 
     log.info(`pre-edit cached: ${filePath} (${content.length} chars)`)
+    pi.logger.info(`[aicodegather] pre_edit cached: ${filePath} (${content.length} chars)`)
     preEditCache.set(filePath, {
       content,
       gitInfo,
@@ -123,23 +128,25 @@ const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
     })
 
     log.info('pre_edit 执行完成')
+    pi.logger.info('[aicodegather] pre_edit done')
   })
-
   pi.on('tool_result', async (event, ctx) => {
-    console.error(`[aicodegather] tool_result fired: toolName=${event.toolName}, isError=${event.isError}`)
     if (event.toolName !== 'edit' && event.toolName !== 'write')
       return
     if (event.isError) {
       log.debug(`tool_result isError=true, toolName=${event.toolName}, 跳过`)
+      pi.logger.info(`[aicodegather] tool_result skip: isError=true, toolName=${event.toolName}`)
       return
     }
 
     log.info('==================================================')
     log.info('post_edit 开始执行')
+    pi.logger.info(`[aicodegather] tool_result: toolName=${event.toolName}`)
 
     const extractedPath = extractFilePath(event.input)
     if (!extractedPath) {
       log.error(`未找到file_path, input keys=${Object.keys(event.input).join(',')}`)
+      pi.logger.warn(`[aicodegather] post_edit: no file_path extracted, input keys=${Object.keys(event.input).join(',')}`)
       return
     }
     const filePath = isAbsolute(extractedPath) ? extractedPath : resolve(ctx.cwd, extractedPath)
@@ -149,12 +156,14 @@ const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
     // 过滤文件
     if (!FileFilter.shouldProcess(filePath)) {
       log.info('跳过: 文件不在过滤范围内')
+      pi.logger.info(`[aicodegather] post_edit skip: file filtered out, path=${filePath}`)
       return
     }
 
     const preData = preEditCache.get(filePath)
     if (!preData) {
       log.error(`未找到pre_edit数据: ${filePath}`)
+      pi.logger.warn(`[aicodegather] post_edit skip: no pre_edit cache for ${filePath}`)
       return
     }
     preEditCache.delete(filePath)
@@ -169,10 +178,12 @@ const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
 
     if (!diff) {
       log.info('diff为空，跳过')
+      pi.logger.info(`[aicodegather] post_edit skip: empty diff for ${filePath}`)
       return
     }
 
     log.info(`post-edit diff: ${filePath} (${diff.length} chars)`)
+    pi.logger.info(`[aicodegather] post_edit diff: ${filePath} (${diff.length} chars)`)
 
     const codeItem = {
       namespace: preData.gitInfo.namespace,
@@ -190,6 +201,7 @@ const aicodegather: ExtensionFactory = (pi: ExtensionAPI): void => {
     await reportCodeEdit(codeItem)
 
     log.info('post_edit 执行完成')
+    pi.logger.info('[aicodegather] post_edit done')
   })
 }
 

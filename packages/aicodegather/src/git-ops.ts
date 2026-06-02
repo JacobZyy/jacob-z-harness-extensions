@@ -39,9 +39,9 @@ export function getGitRemoteUrl(cwd: string): string | null {
   return runGit(['remote', 'get-url', 'origin'], cwd)
 }
 
-/** 从 remote URL 提取 namespace（group/project） */
+/** 从 remote URL 提取 namespace（仅取 group，即第一个 '/' 之前的部分） */
 export function getGitNamespace(remoteUrl: string): string {
-  // Strategy: strip protocol, strip host, strip .git suffix
+  // Strategy: strip protocol, strip host, strip .git suffix, take first segment
   let rest = remoteUrl
   // Remove protocol
   rest = rest.replace(/^[a-z]+:\/\//, '')
@@ -54,7 +54,9 @@ export function getGitNamespace(remoteUrl: string): string {
   rest = rest.slice(hostEnd + 1)
   // Remove .git suffix
   rest = rest.replace(/\.git$/, '')
-  return rest || 'unknown'
+  // Only take the first segment (group), e.g. "zz-youpin/n_lab_store" → "zz-youpin"
+  const firstSlash = rest.indexOf('/')
+  return firstSlash === -1 ? (rest || 'unknown') : rest.slice(0, firstSlash)
 }
 
 /** 根据 remote URL 判断环境 */

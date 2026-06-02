@@ -1,29 +1,41 @@
 {
   "name": "@jacob-z/aicodegather",
   "type": "module",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "description": "AI code edit tracking: captures diffs from Edit/Write tools and optionally reports to a configurable analytics endpoint",
-  "author": { "name": "Jacob" },
+  "author": {
+    "name": "Jacob"
+  },
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/JacobZyy/jacob-omp-collections", "directory": "packages/aicodegather" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JacobZyy/jacob-omp-collections",
+    "directory": "packages/aicodegather"
+  },
   "omp": {
-    "extensions": ["./src/index.ts"]
+    "extensions": [
+      "./dist/index.mjs"
+    ]
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./src/index.ts"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
   },
-  "main": "./src/index.ts",
-  "files": ["src"],
+  "main": "./dist/index.mjs",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsdown",
+    "publish:ci": "tsdown && npm publish --access public --registry https://registry.npmjs.org/",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1"
+    "@types/node": "^25.9.1",
+    "tsdown": "^0.22.1"
   }
 }

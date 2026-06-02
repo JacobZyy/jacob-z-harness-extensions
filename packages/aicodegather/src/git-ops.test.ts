@@ -3,28 +3,28 @@ import { getEnvType, getGitNamespace } from './git-ops'
 
 describe('git-ops', () => {
   describe('getGitNamespace', () => {
-    it('extracts namespace from SSH URL', () => {
+    it('extracts group from SSH URL', () => {
       expect(getGitNamespace('git@gitlab.example.com:zz-fe-u/nlab_sale.git'))
-        .toBe('zz-fe-u/nlab_sale')
+        .toBe('zz-fe-u')
     })
 
-    it('extracts namespace from HTTPS URL', () => {
+    it('extracts group from HTTPS URL', () => {
       expect(getGitNamespace('https://gitlab.example.com/group/project.git'))
-        .toBe('group/project')
+        .toBe('group')
     })
 
-    it('extracts namespace without .git suffix', () => {
+    it('extracts group without .git suffix', () => {
       expect(getGitNamespace('git@gitlab.example.com:group/project'))
-        .toBe('group/project')
+        .toBe('group')
     })
 
     it('returns unknown for unparseable URL', () => {
       expect(getGitNamespace('')).toBe('unknown')
     })
 
-    it('handles nested groups', () => {
+    it('handles nested groups (only first segment)', () => {
       expect(getGitNamespace('git@gitlab.example.com:org/team/project.git'))
-        .toBe('org/team/project')
+        .toBe('org')
     })
   })
 
