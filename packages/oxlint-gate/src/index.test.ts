@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractFilePath } from './index'
+import { extractFilePath } from './lib/utils'
 
 describe('extractFilePath', () => {
   it('should extract path from direct path field', () => {
