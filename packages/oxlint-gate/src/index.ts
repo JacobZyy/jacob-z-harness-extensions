@@ -256,12 +256,12 @@ function sniffEslintVersion(cwd: string): string | undefined {
       ...(pkg.devDependencies as Record<string, string> | undefined),
       ...(pkg.dependencies as Record<string, string> | undefined),
     }
-    const raw = deps['eslint']
+    const raw = deps.eslint
     if (!raw)
       return undefined
 
     // Strip workspace/caret/tilde prefixes: "^9.1.0" → "9.1.0"
-    const clean = raw.replace(/^[^0-9]*/, '')
+    const clean = raw.replace(/^\D*/, '')
     return clean || undefined
   }
   catch {
