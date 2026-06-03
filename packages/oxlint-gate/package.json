@@ -1,8 +1,8 @@
 {
   "name": "@jacob-z/oxlint-gate",
   "type": "module",
-  "version": "1.0.0",
-  "description": "Real-time type assertion gate using oxlint — blocks `as any` and other type laziness before files are saved",
+  "version": "1.1.0",
+  "description": "Real-time lint quality gate for OMP — auto-detects ESLint ≥ 9 or falls back to oxlint",
   "author": { "name": "Jacob" },
   "license": "MIT",
   "repository": { "type": "git", "url": "https://github.com/JacobZyy/jacob-omp-collections", "directory": "packages/oxlint-gate" },
