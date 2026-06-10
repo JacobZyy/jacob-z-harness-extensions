@@ -17,7 +17,7 @@
     "provenance": true
   },
   "dependencies": {
-    "@opencode-ai/plugin": "1.0.85"
+    "@opencode-ai/plugin": "^1.17.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.5"
