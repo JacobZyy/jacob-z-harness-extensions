@@ -1,88 +1,49 @@
 # opencode-oxc-lint
 
-Run oxlint CLI after edit/write/apply_patch in opencode
+OpenCode plugin that runs `oxlint` after source-file edits.
 
-> An OpenCode plugin created from the [opencode-plugin-template](https://github.com/zenobi-us/opencode-plugin-template)
+The plugin runs `oxlint --fix` first. If fixes leave diagnostics behind, it runs `oxlint` again and appends the final diagnostics to the OpenCode tool output so the agent can continue fixing them.
 
-## Features
+## Install
 
-- 🏗️ TypeScript-based plugin architecture
-- 🔧 Mise task runner integration
-- 📦 Bun/npm build tooling
-- ✨ ESLint + Prettier formatting
-- 🧪 Vitest testing setup
-- 🚀 GitHub Actions CI/CD
-- 📝 Release automation with release-please
+```bash
+npm install -g opencode-oxc-lint
+```
 
-## Getting Started
+## Configure
 
-1. **Clone this template:**
-
-   ```bash
-   cp -r opencode-plugin-template your-plugin-name
-   cd your-plugin-name
-   ```
-
-2. **Update package.json:**
-   - Change `name` to your plugin name
-   - Update `description`
-   - Update `repository.url`
-
-3. **Install dependencies:**
-
-   ```bash
-   bun install
-   ```
-
-4. **Implement your plugin in `src/index.ts`:**
-
-   ```typescript
-   import type { Plugin } from '@opencode-ai/plugin';
-
-   export const YourPlugin: Plugin = async (ctx) => {
-     return {
-       tool: {
-         // Your plugin tools here
-       },
-     };
-   };
-   ```
-
-5. **Test your plugin:**
-   ```bash
-   mise run test
-   ```
-
-## Development
-
-- `mise run build` - Build the plugin
-- `mise run test` - Run tests
-- `mise run lint` - Lint code
-- `mise run lint:fix` - Fix linting issues
-- `mise run format` - Format code with Prettier
-
-## Installation in OpenCode
-
-Create or edit `~/.config/opencode/config.json`:
+Add the plugin to OpenCode config:
 
 ```json
 {
-  "plugins": ["opencode-oxc-lint"]
+  "plugin": [
+    [
+      "opencode-oxc-lint",
+      {
+        "oxlintBin": "oxlint",
+        "configPath": "./.oxlintrc.json",
+        "disableNestedConfig": false
+      }
+    ]
+  ]
 }
 ```
 
-## Author
+## Options
 
-Jacob Zhang <jacobzha@users.noreply.github.com>
+| Option                | Default                                                  | Description                              |
+| --------------------- | -------------------------------------------------------- | ---------------------------------------- |
+| `oxlintBin`           | `oxlint`                                                 | Binary or path used to run oxlint.       |
+| `configPath`          | unset                                                    | Optional oxlint config passed with `-c`. |
+| `disableNestedConfig` | `false`                                                  | Adds `--disable-nested-config`.          |
+| `extensions`          | JS/TS/Vue extensions                                     | File extensions to lint.                 |
+| `maxLines`            | `2000`                                                   | Skip files over this line count.         |
+| `log`                 | `true`                                                   | Write local summary logs.                |
+| `logPath`             | `~/.local/state/opencode-oxc-lint/opencode-oxc-lint.log` | Log destination.                         |
 
-## Repository
+## Behavior
 
-https://github.com/jacob-z-dev/opencode-oxc-lint
-
-## Contributing
-
-Contributions are welcome! Please file issues or submit pull requests on the GitHub repository.
-
-## License
-
-MIT License. See the [LICENSE](LICENSE) file for details.
+- Runs after successful `edit`, `write`, and `apply_patch` tools.
+- Skips unsupported, deleted, missing, and over-large files.
+- Appends output only when configuration errors or remaining diagnostics need agent attention.
+- Does not run formatters; configure OpenCode formatter separately.
