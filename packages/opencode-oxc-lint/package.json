@@ -1,0 +1,25 @@
+{
+  "name": "opencode-oxc-lint",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Run oxlint CLI after edit/write/apply_patch in opencode",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.0.85"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5"
+  }
+}
