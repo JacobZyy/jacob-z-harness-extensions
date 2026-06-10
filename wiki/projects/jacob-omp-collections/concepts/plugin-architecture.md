@@ -23,7 +23,7 @@ OMP 提供一套 Extension API，允许插件开发者通过事件驱动的方�
 
 ## Extension 入口
 
-每个插件通过 `src/index.ts` 导出默认函数，类型为 `ExtensionFactory`：
+每个插件通过 `src/[[index]].ts` 导出默认函数，类型为 `ExtensionFactory`：
 
 ```typescript
 import type { ExtensionAPI } from '@oh-my-pi/pi-coding-agent'
@@ -52,7 +52,7 @@ export default function myPlugin(pi: ExtensionAPI) {
 
 ```json
 {
-  "name": "@jacob-omp-collections/<plugin-name>",
+  "name": "@[[projects/jacob-omp-collections/jacob-omp-collections]]/<plugin-name>",
   "omp": { "extensions": ["./src/index.ts"] }
 }
 ```

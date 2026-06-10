@@ -4,7 +4,7 @@ category: entities
 tags: [omp, extension, lint, type-safety, oxlint]
 aliases: [oxlint 类型断言门禁]
 sources:
-  - packages/oxlint-gate/src/index.ts
+  - packages/oxlint-gate/src/[[index]].ts
   - packages/oxlint-gate/package.json
   - marketplace.json
 summary: >-
@@ -22,7 +22,7 @@ updated: 2026-06-01T12:00:00Z
 
 # oxlint-gate
 
-oxlint-gate 是一个 OMP Marketplace Extension 插件，用于在代码编辑时实时检查类型断言违规。当用户使用 Edit/Write 工具时，插件会拦截并检查目标文件，如果发现 `as any`、`as unknown as X` 等类型偷懒断言，会阻断编辑并提供修复建议。
+oxlint-gate 是一个 OMP [[projects/jacob-omp-collections/concepts/marketplace-system|Marketplace]] Extension 插件，用于在代码编辑时实时检查类型断言违规。当用户使用 Edit/Write 工具时，插件会拦截并检查目标文件，如果发现 `as any`、`as unknown as X` 等类型偷懒断言，会阻断编辑并提供修复建议。
 
 从 Claude Code 的 oxlint-stop.ts hook 移植而来，适配了 OMP Extension API。
 
@@ -52,11 +52,11 @@ oxlint-gate 是一个 OMP Marketplace Extension 插件，用于在代码编辑�
 
 ## 踩坑记录
 
-### marketplace 安装后不加载
+### [[projects/jacob-omp-collections/concepts/marketplace-system|marketplace]] 安装后不加载
 
 **原因**：OMP 从 `package.json#dependencies` 发现插件，而不是 `installed_plugins.json`。
 
-**修复**：`install.sh --fix-links` 同时修复 symlink 和 package.json。
+**修复**：`[[projects/jacob-omp-collections/concepts/installation-and-deployment|install.sh]] --fix-links` 同时修复 symlink 和 package.json。
 
 ### `~` 路径未展开
 
@@ -86,6 +86,7 @@ oxlint-gate 支持 lint 失败后自动尝试修复。关键设计考虑：
 
 ## 相关链接
 
+- [[projects/jacob-omp-collections/concepts/marketplace-system]] — OMP Marketplace 系统
 - [[projects/jacob-omp-collections/entities/aicodegather]] — 同仓库的另一个 Extension 插件
 - [[projects/jacob-omp-collections/skills/aicodegather-troubleshooting]] — 详细排查记录
 - [[projects/jacob-omp-collections/concepts/plugin-architecture]] — OMP Extension 架构

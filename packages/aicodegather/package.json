@@ -9,13 +9,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JacobZyy/jacob-omp-collections",
+    "url": "https://github.com/JacobZyy/jacob-z-harness-extensions",
     "directory": "packages/aicodegather"
-  },
-  "omp": {
-    "extensions": [
-      "./dist/index.mjs"
-    ]
   },
   "exports": {
     ".": {
@@ -37,5 +32,10 @@
   "devDependencies": {
     "@types/node": "^25.9.1",
     "tsdown": "^0.22.1"
+  },
+  "omp": {
+    "extensions": [
+      "./dist/index.mjs"
+    ]
   }
 }

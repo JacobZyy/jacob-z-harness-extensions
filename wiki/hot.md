@@ -1,6 +1,6 @@
 ---
 title: Hot Cache
-updated: 2026-05-31T06:00:00Z
+updated: 2026-06-03T04:03:00Z
 ---
 
 # Hot Cache
@@ -9,9 +9,9 @@ _A ~500-word semantic snapshot of recent activity. Updated after every major wri
 
 ## Recent Activity
 
-- [2026-05-31T06:00:00Z] **oxlint-gate 插件踩坑记录更新** — 更新了 aicodegather-troubleshooting.md 和 oxlint-gate.md，记录了 marketplace 安装后插件不加载（package.json#dependencies 未同步）和 `~` 路径未展开两个关键问题及修复方案。
-- [2026-05-31T02:30:00Z] **History ingest: OMP 会话记录 (5/29)** — 从 jacob-omp-collections 和 oh-my-pi 两个仓库的 OMP 会话 JSONL 中提取知识，创建 2 个新页面、更新 2 个已有页面。
-- [2026-05-31T02:20:00Z] **Full ingest of jacob-omp-collections source docs** — 8 个 wiki 页面覆盖仓库结构、安装部署、OMP Extension 架构、aicodegather 与 oxlint-gate 插件详情。
+- [2026-06-03T04:03:00Z] **History ingest: OMP 会话记录 (6/2-6/3)** — 从 oh-my-pi 仓库的 3 个新 OMP 会话中提取知识，创建 2 个新页面（marketplace-skill-loading、oh-my-pi 项目概览），记录了 plugin: 前缀问题和二进制编译机制。
+- [2026-05-31T06:00:00Z] **[[projects/jacob-omp-collections/entities/oxlint-gate]] 插件踩坑记录更新** — 更新了 aicodegather-troubleshooting.md 和 oxlint-gate.md，记录了 marketplace 安装后插件不加载和 `~` 路径未展开两个关键问题。
+- [2026-05-31T02:30:00Z] **History ingest: OMP 会话记录 (5/29)** — 从 [[projects/jacob-omp-collections/jacob-omp-collections]] 和 oh-my-pi 两个仓库的 OMP 会话 JSONL 中提取知识，创建 2 个新页面、更新 2 个已有页面。
 
 ## Active Threads
 

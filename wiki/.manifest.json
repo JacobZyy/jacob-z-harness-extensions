@@ -1,9 +1,10 @@
 {
   "version": 1,
   "stats": {
-    "total_sources_ingested": 11,
-    "total_pages": 11,
-    "last_ingest": "2026-06-01T12:00:00Z"
+    "total_sources_ingested": 12,
+    "total_pages": 18,
+    "last_ingest": "2026-06-03T04:03:00Z",
+    "total_projects": 2
   },
   "sources": {
     "AGENTS.md": {
@@ -130,17 +131,56 @@
         "projects/jacob-omp-collections/entities/aicodegather.md"
       ]
     },
-    "omp-sessions-may31-jun01": {
-      "ingested_at": "2026-06-01T12:00:00Z",
+    "omp-sessions-jun01-02-jc": {
+      "ingested_at": "2026-06-02T04:02:00Z",
       "source_type": "session_transcript",
       "project": "jacob-omp-collections",
+      "sessions": [
+        "019e8433-1e87-7000-85d1-e60014e490ea",
+        "019e843c-7935-7000-b80b-c0a0db771b06",
+        "019e85f6-f9c5-7000-84e3-b2d6cd4a5b74"
+      ],
       "pages_created": [
-        "projects/jacob-omp-collections/skills/plugin-config-debugging.md"
+        "projects/jacob-omp-collections/concepts/marketplace-install-deep-dive.md",
+        "projects/jacob-omp-collections/skills/aicodegather-log-audit.md",
+        "projects/jacob-omp-collections/concepts/script-implementation-comparison.md"
       ],
       "pages_updated": [
-        "projects/jacob-omp-collections/concepts/marketplace-system.md",
-        "projects/jacob-omp-collections/entities/oxlint-gate.md"
+        "projects/jacob-omp-collections/concepts/marketplace-system.md"
       ]
+    },
+    "omp-sessions-jun01-02-omp": {
+      "ingested_at": "2026-06-02T04:02:00Z",
+      "source_type": "session_transcript",
+      "project": "oh-my-pi",
+      "sessions": [
+        "019e80d5-c0c2-7000-ba44-aaf98a3bdaa7",
+        "019e81b2-53ce-7000-a5e4-3ce593f354aa",
+        "019e81d4-1386-7000-afcc-1c3c767b04b0",
+        "019e8219-dd2c-7000-9741-9efb4f7d1ff1",
+        "019e8253-2a6c-7000-add9-ad9d2b449685",
+        "019e8287-b108-7000-976d-20fdbcdc7949",
+        "019e8613-d3cc-7000-be33-abf398df9c29"
+      ],
+      "pages_created": [
+        "projects/oh-my-pi/concepts/xiaomi-mimo-login.md"
+      ],
+      "pages_updated": []
+    },
+    "omp-sessions-jun02-03-omp": {
+      "ingested_at": "2026-06-03T04:03:00Z",
+      "source_type": "session_transcript",
+      "project": "oh-my-pi",
+      "sessions": [
+        "019e861a-fb4a-7000-9d55-f5f4bcd30798",
+        "019e8709-c66d-7000-8a0e-597dddf2cec3",
+        "019e8b7e-ea93-7000-b618-46f7de74de9b"
+      ],
+      "pages_created": [
+        "projects/oh-my-pi/concepts/marketplace-skill-loading",
+        "projects/oh-my-pi/oh-my-pi"
+      ],
+      "pages_updated": []
     }
   }
 }

@@ -1,6 +1,9 @@
 {
-  "name": "jacob-omp-collections",
+  "name": "jacob-z-harness-extensions",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "lint": "eslint . --cache --concurrency=auto",
     "lint:fix": "eslint . --cache --concurrency=auto --fix"
@@ -22,8 +25,5 @@
   },
   "lint-staged": {
     "*": "eslint --fix"
-  },
-  "workspaces": [
-    "packages/*"
-  ]
+  }
 }

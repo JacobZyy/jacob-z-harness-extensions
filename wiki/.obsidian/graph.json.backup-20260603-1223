@@ -20,31 +20,31 @@
       "color": { "a": 1, "rgb": 14767961 }
     },
     {
-      "query": "tag:#skills",
+      "query": "tag:#extension",
       "color": { "a": 1, "rgb": 7780786 }
     },
     {
-      "query": "tag:#plugin-system",
+      "query": "tag:#skills",
       "color": { "a": 1, "rgb": 5873999 }
     },
     {
-      "query": "tag:#oh-my-pi",
+      "query": "tag:#mcp",
       "color": { "a": 1, "rgb": 15583048 }
     },
     {
-      "query": "tag:#extension",
+      "query": "tag:#plugin-system",
       "color": { "a": 1, "rgb": 11565217 }
     },
     {
-      "query": "tag:#typescript",
+      "query": "tag:#plugin",
       "color": { "a": 1, "rgb": 16751527 }
     },
     {
-      "query": "tag:#troubleshooting",
+      "query": "tag:#howto",
       "color": { "a": 1, "rgb": 10253663 }
     },
     {
-      "query": "tag:#plugin",
+      "query": "tag:#troubleshooting",
       "color": { "a": 1, "rgb": 12234924 }
     }
   ],

@@ -24,11 +24,11 @@ AGENTS.md 是 jacob-omp-collections 的主要项目文档，包含完整的项�
 ## 内容概述
 
 - **项目结构** — 顶层目录设计：`.claude-plugin/`、`packages/`、`skills/`、`mcp/`
-- **安装方法** — `install.sh` 的三种模式（默认、--all、--uninstall）
-- **添加 Marketplace 插件** — 从创建目录到 `marketplace update` 的完整流程
+- **安装方法** — `[[projects/jacob-omp-collections/concepts/installation-and-deployment|install.sh]]` 的三种模式（默认、--all、--uninstall）
+- **[[projects/jacob-omp-collections/skills/adding-a-plugin|添加 Marketplace 插件]]** — 从创建目录到 `marketplace update` 的完整流程
 - **添加 Skill** — 创建 `SKILL.md` 并运行 `install.sh`
 - **添加 MCP Server** — 编辑 `mcp/mcp.json` 并运行 `install.sh`
-- **OMP Extension API** — 事件类型和 `ExtensionFactory` 签名
+- **OMP [[projects/jacob-omp-collections/concepts/plugin-architecture|Extension API]]** — 事件类型和 `ExtensionFactory` 签名
 - **命名规范** — 目录名和 marketplace name 约定
 - **约束** — Skills 和 MCP 不能通过 marketplace 分发
 - **开发校验** — lint:fix → vitest run

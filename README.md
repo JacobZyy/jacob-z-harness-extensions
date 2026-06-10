@@ -1,14 +1,10 @@
-# jacob-z
+# jacob-z-harness-extensions
 
-OMP plugin collection for [Oh My Pi](https://github.com/can1357/oh-my-pi).
+通用 [Harness](https://github.com/can1357/oh-my-pi) Extensions 集合。面向所有 coding agent，不绑定特定客户端（Claude Code、Cursor 等）。
 
-## 两条分发轨道
+## Extensions
 
-### Extension 轨道（npm）
-
-通过 `omp install` 安装，走 npm publish。
-
-#### aicodegather
+### aicodegather
 
 AI code edit tracking extension. Captures diffs from Edit/Write tools and optionally reports to an analytics endpoint.
 
@@ -23,33 +19,40 @@ AI code edit tracking extension. Captures diffs from Edit/Write tools and option
 
 When no config file exists (or URLs are omitted), the extension runs silently — no network requests are made, only local logging.
 
-#### oxlint-gate
+### oxlint-gate
 
 Real-time type assertion gate using oxlint. Blocks `as any` and other type-unsafe patterns before files are saved. Pure local tool, no network requests.
 
-#### 安装
+### Installation
 
 ```bash
 omp install @jacob-z/aicodegather
 omp install @jacob-z/oxlint-gate
 ```
 
-### Marketplace 轨道
+## Adding a New Extension
 
-共享的 skills、hooks、MCP 配置，通过 marketplace 分发。
+1. Create a new directory under `packages/`
+2. Write `src/index.ts` entry
+3. Declare `omp.extensions` in `package.json`:
 
-```bash
-/marketplace add JacobZyy/jacob-omp-collections
-/marketplace install marketplace-share@jacob-omp-collections
+```json
+{
+  "name": "@jacob-z/<plugin-name>",
+  "omp": { "extensions": ["./src/index.ts"] },
+  "files": ["src"]
+}
 ```
 
-## Releasing a New Version（Extension 轨道）
+4. Commit, push, then `npm publish --access public`
 
-1. Update `packages/<plugin>/package.json` `version` field
-2. Commit: `git commit -m "chore: release <plugin>@<version>"`
-3. Push: `git push`
-4. Publish: `cd packages/<plugin> && npm publish --access public`
-5. In OMP session: `omp install @jacob-z/<plugin>@<version>`
+## Release Flow
+
+1. Update `packages/<plugin>/package.json` version
+2. `bunx vitest run` — ensure tests pass
+3. `git add -A && git commit -m "chore: release <plugin>@<version>" && git push`
+4. `cd packages/<plugin> && npm publish --access public`
+5. User side: `omp install @jacob-z/<plugin>@<version>`
 
 ## Development
 

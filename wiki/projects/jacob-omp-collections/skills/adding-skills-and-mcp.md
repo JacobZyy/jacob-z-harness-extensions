@@ -23,7 +23,7 @@ updated: 2026-05-31T02:20:00Z
 
 1. 在 `skills/` 下新建目录，放入 `SKILL.md`
 
-2. 运行 `./install.sh`，脚本自动 symlink 到 `~/.omp/agent/skills/<name>`
+2. 运行 `./[[projects/jacob-omp-collections/concepts/installation-and-deployment|install.sh]]`，脚本自动 symlink 到 `~/.omp/agent/skills/<name>`
 
 OMP 加载路径：`~/.omp/agent/skills/*/SKILL.md`
 
@@ -49,5 +49,5 @@ OMP 加载路径：`~/.omp/agent/mcp.json`
 
 ## 限制
 
-- Skills 和 MCP **不能**通过 marketplace 插件分发，只能通过 symlink/merge 安装
+- Skills 和 MCP **不能**通过 [[projects/jacob-omp-collections/concepts/marketplace-system|marketplace]] 插件分发，只能通过 symlink/merge 安装
 - 不要修改 `.claude-plugin/marketplace.json` 的顶层结构（`name`、`owner`）

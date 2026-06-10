@@ -7,10 +7,23 @@
   <key id="relation" for="edge" attr.name="relation" attr.type="string"/>
   <key id="confidence" for="edge" attr.name="confidence" attr.type="string"/>
   <graph id="wiki" edgedefault="undirected">
-    <node id="hot">
-      <data key="label">Hot Cache</data>
-      <data key="category"></data>
-      <data key="tags"></data>
+    <node id="projects/oh-my-pi/oh-my-pi">
+      <data key="label">oh-my-pi</data>
+      <data key="category">projects</data>
+      <data key="tags">oh-my-pi, coding-agent, cli, typescript</data>
+      <data key="community">1</data>
+    </node>
+    <node id="projects/oh-my-pi/concepts/xiaomi-mimo-login">
+      <data key="label">Xiaomi Mimo 登录流程</data>
+      <data key="category">projects</data>
+      <data key="tags">oh-my-pi, login, xiaomi, mimo, authentication</data>
+      <data key="community">1</data>
+    </node>
+    <node id="projects/oh-my-pi/concepts/marketplace-skill-loading">
+      <data key="label">Marketplace 技能加载机制</data>
+      <data key="category">projects</data>
+      <data key="tags">oh-my-pi, marketplace, skills, debugging, plugin-system</data>
+      <data key="community">1</data>
     </node>
     <node id="projects/jacob-omp-collections/jacob-omp-collections">
       <data key="label">jacob-omp-collections</data>
@@ -34,6 +47,18 @@
       <data key="label">安装与部署</data>
       <data key="category">projects</data>
       <data key="tags">omp, install, deployment, symlink, merge</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive">
+      <data key="label">Marketplace 安装机制深入理解</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, marketplace, plugin-system, debugging, installation</data>
+      <data key="community">0</data>
+    </node>
+    <node id="projects/jacob-omp-collections/concepts/script-implementation-comparison">
+      <data key="label">脚本实现方案对比</data>
+      <data key="category">projects</data>
+      <data key="tags">omp, scripting, typescript, python, best-practices</data>
       <data key="community">0</data>
     </node>
     <node id="projects/jacob-omp-collections/concepts/marketplace-system">
@@ -66,11 +91,17 @@
       <data key="tags">omp, plugin, debugging, configuration, troubleshooting</data>
       <data key="community">0</data>
     </node>
+    <node id="projects/jacob-omp-collections/skills/aicodegather-log-audit">
+      <data key="label">aicodegather 日志与上报审计</data>
+      <data key="category">projects</data>
+      <data key="tags">aicodegather, debugging, logging, audit, extension</data>
+      <data key="community">2</data>
+    </node>
     <node id="projects/jacob-omp-collections/skills/aicodegather-troubleshooting">
       <data key="label">aicodegather 排查记录</data>
       <data key="category">projects</data>
       <data key="tags">aicodegather, debugging, omp, troubleshooting, oxlint-gate</data>
-      <data key="community">1</data>
+      <data key="community">2</data>
     </node>
     <node id="projects/jacob-omp-collections/entities/oxlint-gate">
       <data key="label">oxlint-gate</data>
@@ -84,6 +115,34 @@
       <data key="tags">omp, extension, analytics, code-tracking</data>
       <data key="community">0</data>
     </node>
+    <edge source="projects/oh-my-pi/oh-my-pi" target="projects/oh-my-pi/concepts/marketplace-skill-loading">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/oh-my-pi/oh-my-pi" target="projects/jacob-omp-collections/jacob-omp-collections">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/oh-my-pi/oh-my-pi" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/oh-my-pi/concepts/xiaomi-mimo-login" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/oh-my-pi/concepts/marketplace-skill-loading" target="projects/oh-my-pi/oh-my-pi">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/oh-my-pi/concepts/marketplace-skill-loading" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/oh-my-pi/concepts/marketplace-skill-loading" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
     <edge source="projects/jacob-omp-collections/jacob-omp-collections" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
@@ -124,6 +183,22 @@
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
     </edge>
+    <edge source="projects/jacob-omp-collections/references/agents-doc" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/references/agents-doc" target="projects/jacob-omp-collections/skills/adding-a-plugin">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/references/agents-doc" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/plugin-architecture" target="projects/jacob-omp-collections/jacob-omp-collections">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
     <edge source="projects/jacob-omp-collections/concepts/plugin-architecture" target="projects/jacob-omp-collections/entities/aicodegather">
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
@@ -136,11 +211,111 @@
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
     </edge>
+    <edge source="projects/jacob-omp-collections/concepts/installation-and-deployment" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/installation-and-deployment" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/installation-and-deployment" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/installation-and-deployment" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/installation-and-deployment" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/skills/plugin-config-debugging">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive" target="projects/jacob-omp-collections/skills/adding-a-plugin">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/script-implementation-comparison" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/script-implementation-comparison" target="projects/jacob-omp-collections/skills/adding-skills-and-mcp">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
     <edge source="projects/jacob-omp-collections/concepts/marketplace-system" target="projects/jacob-omp-collections/entities/aicodegather">
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
     </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-system" target="projects/jacob-omp-collections/concepts/repo-structure">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
     <edge source="projects/jacob-omp-collections/concepts/marketplace-system" target="projects/jacob-omp-collections/skills/plugin-config-debugging">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/marketplace-system" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/repo-structure" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/repo-structure" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/repo-structure" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/repo-structure" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/repo-structure" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/concepts/repo-structure" target="projects/jacob-omp-collections/references/agents-doc">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/adding-skills-and-mcp" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/adding-skills-and-mcp" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/plugin-config-debugging" target="projects/jacob-omp-collections/jacob-omp-collections">
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
     </edge>
@@ -160,6 +335,62 @@
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
     </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-log-audit" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-log-audit" target="projects/jacob-omp-collections/skills/aicodegather-troubleshooting">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/concepts/marketplace-install-deep-dive">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/entities/aicodegather">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/skills/aicodegather-troubleshooting" target="projects/jacob-omp-collections/entities/oxlint-gate">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/concepts/installation-and-deployment">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
     <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/entities/aicodegather">
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
@@ -169,6 +400,14 @@
       <data key="confidence">EXTRACTED</data>
     </edge>
     <edge source="projects/jacob-omp-collections/entities/oxlint-gate" target="projects/jacob-omp-collections/concepts/plugin-architecture">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/aicodegather" target="projects/jacob-omp-collections/concepts/marketplace-system">
+      <data key="relation">wikilink</data>
+      <data key="confidence">EXTRACTED</data>
+    </edge>
+    <edge source="projects/jacob-omp-collections/entities/aicodegather" target="projects/jacob-omp-collections/concepts/marketplace-system">
       <data key="relation">wikilink</data>
       <data key="confidence">EXTRACTED</data>
     </edge>

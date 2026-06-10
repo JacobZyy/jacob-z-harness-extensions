@@ -68,7 +68,7 @@ PluginSettingsComponent.#showPluginList()
 **原因**：通过 `npm install` 安装的插件会写入 `~/.omp/plugins/package.json` 的 dependencies；通过 `/marketplace install` 安装的会写入 `installed_plugins.json`。两者独立管理，互不感知。
 
 **解决方案**：
-- 如果只需要 npm 方式管理：清理 `installed_plugins.json` 中的对应条目，并删除 `~/.omp/plugins/node_modules/@jacob-omp-collections/` 目录
+- 如果只需要 npm 方式管理：清理 `installed_plugins.json` 中的对应条目，并删除 `~/.omp/plugins/node_modules/@[[projects/jacob-omp-collections/jacob-omp-collections]]/` 目录
 - 如果只需要 marketplace 方式：从 `package.json` 的 dependencies 中移除对应包
 
 ## 问题 3：Marketplace 安装后插件不加载

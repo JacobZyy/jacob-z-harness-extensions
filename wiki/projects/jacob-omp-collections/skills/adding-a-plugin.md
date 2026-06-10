@@ -23,7 +23,7 @@ updated: 2026-05-31T02:20:00Z
 
 1. 在 `packages/` 下新建目录（命名：小写字母、数字、连字符）
 
-2. 编写 `src/index.ts` 作为 Extension 入口
+2. 编写 `src/[[index]].ts` 作为 Extension 入口
 
 3. `package.json` 声明 `omp.extensions`：
 

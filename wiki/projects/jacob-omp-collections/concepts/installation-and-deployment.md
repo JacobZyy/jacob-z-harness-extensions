@@ -28,7 +28,7 @@ updated: 2026-05-31T02:20:00Z
 | ---------------- | ---------------------------- | ------------------------------- |
 | Skills           | `~/.omp/agent/skills/<name>` | Symlink                         |
 | MCP              | `~/.omp/agent/mcp.json`      | Merge（Python JSON merge）      |
-| Marketplace 插件 | OMP 内手动安装               | 手动执行 `/marketplace install` |
+| [[projects/jacob-omp-collections/concepts/marketplace-system|Marketplace]] 插件 | OMP 内手动安装               | 手动执行 `/marketplace install` |
 
 ## Skills 安装流程
 
@@ -46,18 +46,18 @@ updated: 2026-05-31T02:20:00Z
 
 Merge 策略：以仓库配置为准，覆盖目标中同名的 MCP server 配置。仅添加/更新，不删除已有 server。
 
-## Marketplace 插件安装
+## [[projects/jacob-omp-collections/concepts/marketplace-system|Marketplace]] 插件安装
 
 不在 install.sh 中自动安装，仅显示提示信息让用户在 OMP 会话内手动执行：
 
 ```
 /marketplace add JacobZyy/jacob-omp-collections
-/marketplace install aicodegather@jacob-omp-collections
-/marketplace install oxlint-gate@jacob-omp-collections
+/marketplace install [[projects/jacob-omp-collections/entities/aicodegather|aicodegather]]@jacob-omp-collections
+/marketplace install [[projects/jacob-omp-collections/entities/oxlint-gate|oxlint-gate]]@jacob-omp-collections
 ```
 
 ## 卸载流程
 
 - 删除已安装的 Skills symlink
 - 从 `~/.omp/agent/mcp.json` 中移除本仓库添加的 MCP server
-- Marketplace 插件需手动 `/marketplace uninstall`
+- [[projects/jacob-omp-collections/concepts/marketplace-system|Marketplace]] 插件需手动 `/marketplace uninstall`

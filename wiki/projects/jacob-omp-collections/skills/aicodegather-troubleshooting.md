@@ -7,8 +7,8 @@ sources:
   - packages/aicodegather/TROUBLESHOOTING.md
   - ~/.omp/agent/sessions/-Documents-workspace-jacob-open-source-oh-my-pi/
   - ~/.omp/agent/sessions/-Documents-workspace-jacob-open-source-[[projects/jacob-omp-collections/jacob-omp-collections|jacob-omp-collections]]/
-  - packages/oxlint-gate/src/index.ts
-  - install.sh
+  - packages/oxlint-gate/src/[[index]].ts
+  - [[projects/jacob-omp-collections/concepts/installation-and-deployment|install.sh]]
 summary: >-
   OMP Extension 的历史问题排查——从 Claude Code hooks 迁移到 OMP Extension 遇到的一系列问题，以及 marketplace 安装和路径处理的踩坑记录。
 provenance:
@@ -24,7 +24,7 @@ updated: 2026-05-31T06:00:00Z
 
 # OMP Extension 排查记录
 
-> 基于 TROUBLESHOOTING.md、oxlint-gate 开发经验和 OMP 源码分析整理。
+> 基于 TROUBLESHOOTING.md、[[projects/jacob-omp-collections/entities/oxlint-gate|oxlint-gate]] 开发经验和 OMP 源码分析整理。
 
 ## 一、插件加载机制（关键）
 
@@ -52,9 +52,9 @@ getEnabledPlugins() 读取 ~/.omp/plugins/package.json#dependencies
 | `~/.omp/plugins/node_modules/@scope/name` | 实际的插件代码     | symlink 断开   |
 | `~/.omp/plugins/cache/plugins/...`        | 插件的缓存目录     | 安装路径不存在 |
 
-## 二、marketplace 安装踩坑
+## 二、[[projects/jacob-omp-collections/concepts/marketplace-system|marketplace]] 安装踩坑
 
-### 问题：marketplace install 后插件不加载
+### 问题：[[projects/jacob-omp-collections/concepts/marketplace-system|marketplace]] install 后插件不加载
 
 **原因**：`omp plugin install` 命令只做了：
 
@@ -117,7 +117,7 @@ const expandedPath = expandTilde(extractedPath)
 const filePath = isAbsolute(expandedPath) ? expandedPath : resolve(ctx.cwd, expandedPath)
 ```
 
-## 四、aicodegather 历史问题
+## 四、[[projects/jacob-omp-collections/entities/aicodegather|aicodegather]] 历史问题
 
 ### tool_call / tool_result 事件未触发
 
@@ -172,3 +172,10 @@ OMP 不会直接 import 插件源文件，而是：
 | 2026-05-31 02:11       | oxlint-gate  | v1.0.0       | 插件安装，但未加载                                      |
 | 2026-05-31 05:34       | oxlint-gate  | v1.0.0       | 修复 package.json 后加载成功                            |
 | 2026-05-31 05:37       | oxlint-gate  | v1.0.0       | 修复 ~ 展开后拦截功能正常                               |
+
+## 相关页面
+
+- [[projects/jacob-omp-collections/concepts/marketplace-system]] — OMP Marketplace 系统
+- [[projects/jacob-omp-collections/concepts/marketplace-install-deep-dive]] — Marketplace 安装机制深入理解
+- [[projects/jacob-omp-collections/entities/aicodegather]] — aicodegather 插件
+- [[projects/jacob-omp-collections/entities/oxlint-gate]] — oxlint-gate 插件

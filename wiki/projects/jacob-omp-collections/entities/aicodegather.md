@@ -4,7 +4,7 @@ category: entities
 tags: [omp, extension, analytics, code-tracking]
 aliases: [AI Code Edit Tracking]
 sources:
-  - packages/aicodegather/src/index.ts
+  - packages/aicodegather/src/[[index]].ts
   - marketplace.json
   - packages/aicodegather/TROUBLESHOOTING.md
   - ~/.omp/agent/sessions/-Documents-workspace-jacob-open-source-oh-my-pi/
@@ -22,7 +22,7 @@ updated: 2026-05-31T02:30:00Z
 
 # aicodegather
 
-aicodegather 是一个 OMP Marketplace Extension 插件，用于追踪 AI 代理对代码的编辑操作。它监听 OMP 的 `tool_call` 和 `tool_result` 事件，捕获 `edit` 和 `write` 工具的代码变更并上报到内部分析系统。
+aicodegather 是一个 OMP [[projects/jacob-omp-collections/concepts/marketplace-system|Marketplace]] Extension 插件，用于追踪 AI 代理对代码的编辑操作。它监听 OMP 的 `tool_call` 和 `tool_result` 事件，捕获 `edit` 和 `write` 工具的代码变更并上报到内部分析系统。
 
 原为 Claude Code hooks 方案（Python 脚本通过 `~/.claude/settings.json` 的 PostToolUse/PreToolUse/SessionStart 钩子触发），后迁移至 OMP Extension API。
 
@@ -80,6 +80,7 @@ OMP 的 edit 工具有 4 种模式，aicodegather 全部支持：
 
 ## 相关链接
 
+- [[projects/jacob-omp-collections/concepts/marketplace-system]] — OMP Marketplace 系统
 - [[projects/jacob-omp-collections/entities/oxlint-gate]] — 同仓库的另一个 Extension 插件
 - [[projects/jacob-omp-collections/concepts/plugin-architecture]] — OMP Extension 架构
 - [[projects/jacob-omp-collections/skills/aicodegather-troubleshooting]] — 详细排查记录

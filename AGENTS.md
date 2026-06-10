@@ -2,10 +2,10 @@
 
 ## 项目结构
 
-OMP 插件仓库，只包含 Extension 轨道：
+通用 Harness Extensions 集合，面向所有 coding agent（不绑定特定客户端）。
 
 ```
-jacob-omp-collections/
+jacob-z-harness-extensions/
   packages/
     aicodegather/                 ← Extension 轨道 — AI code edit tracking
       package.json                ← name: @jacob-z/aicodegather, omp.extensions
