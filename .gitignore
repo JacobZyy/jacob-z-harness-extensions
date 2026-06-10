@@ -5,3 +5,4 @@ dist/
 .omp/
 .env
 .npmrc
+.worktrees/
