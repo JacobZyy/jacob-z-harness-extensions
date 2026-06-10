@@ -1,8 +1,21 @@
-import { describe, expect, it } from 'vitest'
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 
-import { DEFAULT_EXTENSIONS, expandHome, normalizeOptions } from './config'
+import { afterEach, describe, expect, it } from 'vitest'
+
+import { __test__, DEFAULT_EXTENSIONS, expandHome, normalizeOptions } from './config'
 
 describe('config', () => {
+  const tempDirs: string[] = []
+
+  afterEach(() => {
+    for (const dir of tempDirs) {
+      rmSync(dir, { recursive: true, force: true })
+    }
+    tempDirs.length = 0
+  })
+
   it('uses generic defaults without personal paths', () => {
     const options = normalizeOptions()
 
@@ -41,5 +54,39 @@ describe('config', () => {
     expect(expandHome('~/bin/oxlint', home)).toBe('/tmp/home/bin/oxlint')
     expect(expandHome('project/~/file', home)).toBe('project/~/file')
     expect(expandHome(undefined, home)).toBeUndefined()
+  })
+
+  it('reads defaults from the harness oxc-lint field', () => {
+    const home = join(tmpdir(), `opencode-oxc-lint-config-${Date.now()}-${Math.random().toString(16).slice(2)}`)
+    tempDirs.push(home)
+    const configDir = join(home, '.config', 'opencode')
+    mkdirSync(configDir, { recursive: true })
+    const configPath = join(configDir, 'jacob-z-harness-opencode.json')
+    writeFileSync(
+      configPath,
+      JSON.stringify({
+        'oxc-lint': {
+          configPath: '~/.config/oxc/oxlintrc.json',
+          disableNestedConfig: true,
+          extensions: ['.ts'],
+          maxLines: 100,
+          log: false,
+          logPath: '~/logs/oxc.log',
+          oxlintBin: '~/bin/oxlint',
+        },
+      }),
+    )
+
+    const options = __test__.readHarnessOptions('~/.config/opencode/jacob-z-harness-opencode.json', home)
+
+    expect(options).toEqual({
+      configPath: '~/.config/oxc/oxlintrc.json',
+      disableNestedConfig: true,
+      extensions: ['.ts'],
+      maxLines: 100,
+      log: false,
+      logPath: '~/logs/oxc.log',
+      oxlintBin: '~/bin/oxlint',
+    })
   })
 })

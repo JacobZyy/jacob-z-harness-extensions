@@ -1,7 +1,7 @@
 {
   "name": "@jacob-z/opencode-oxc-lint",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run oxlint CLI after edit/write/apply_patch in opencode",
   "exports": {
     ".": {

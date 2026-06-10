@@ -69,4 +69,22 @@ describe('resolve', () => {
 
     expect(files).toEqual([small])
   })
+
+  it('filters out test-like files', () => {
+    const source = join(dir, 'source.ts')
+    const test = join(dir, 'source.test.ts')
+    const spec = join(dir, 'source.spec.ts')
+
+    writeFileSync(source, 'export const source = 1\n')
+    writeFileSync(test, 'export const test = 1\n')
+    writeFileSync(spec, 'export const spec = 1\n')
+
+    const files = filterLintableFiles([source, test, spec], {
+      cwd: dir,
+      extensions: ['.ts'],
+      maxLines: 2000,
+    })
+
+    expect(files).toEqual([source])
+  })
 })

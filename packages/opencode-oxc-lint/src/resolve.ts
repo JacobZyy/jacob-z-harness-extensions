@@ -7,6 +7,8 @@ interface FilterOptions {
   maxLines: number
 }
 
+const TEST_LIKE_FILE_RE = /\.(?:test|spec)\.[^.]+$/
+
 function getStringField(args: Record<string, unknown>, key: string): string | undefined {
   const value = args[key]
   return typeof value === 'string' ? value : undefined
@@ -51,6 +53,9 @@ export function filterLintableFiles(paths: string[], options: FilterOptions): st
       continue
 
     if (!options.extensions.includes(extname(absolute)))
+      continue
+
+    if (TEST_LIKE_FILE_RE.test(absolute))
       continue
 
     if (countLines(absolute) > options.maxLines)
