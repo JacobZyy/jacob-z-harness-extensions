@@ -35,7 +35,7 @@ const lintGate: ExtensionFactory = (pi: ExtensionAPI): void => {
 
   // ── session_start: log config ───────────────────────────────────────
   pi.on('session_start', async () => {
-    log.info(`[lint-gate] oxlint bin: ${config.oxlintBin}, config: ${config.configPath ?? '(default)'}, disableNestedConfig: ${config.disableNestedConfig}`)
+    log.info(`[lint-gate] oxlint: bin=${config.oxlintBin}, config=${config.configPath ?? '(default)'}, disableNestedConfig=${config.disableNestedConfig} | oxfmt: bin=${config.oxfmtBin}, config=${config.oxfmtConfigPath ?? '(default)'}, disableNestedConfig=${config.oxfmtDisableNestedConfig}`)
   })
 
   // ── tool_call: record file path, don't block ────────────────────────
@@ -69,7 +69,7 @@ const lintGate: ExtensionFactory = (pi: ExtensionAPI): void => {
     fixCounters.set(filePath, fixCount + 1)
 
     // Phase 1: Format (oxfmt)
-    const formatResult = runFormatPhase(filePath, log)
+    const formatResult = runFormatPhase(filePath, log, config)
 
     // Phase 2: Lint (oxlint)
     const toolCtx: ToolContext = {

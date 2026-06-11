@@ -7,6 +7,9 @@ const defaultConfig: NormalizedConfig = {
   oxlintBin: 'oxlint',
   configPath: undefined,
   disableNestedConfig: false,
+  oxfmtBin: 'oxfmt',
+  oxfmtConfigPath: undefined,
+  oxfmtDisableNestedConfig: false,
 }
 
 function makeMockLogger() {
