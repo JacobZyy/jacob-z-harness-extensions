@@ -2,20 +2,17 @@
  * lint-gate: Real-time lint quality gate for OMP.
  *
  * Intercepts Edit/Write tool calls, runs format-then-lint pipeline.
- * Strategy is auto-detected per project:
- *   - ESLint ≥ 9 (e.g. antfu config) → project's own eslint --fix
- *   - Otherwise                       → global oxlint as fallback
+ * Uses oxlint exclusively. Options read from ~/.omp/oxlint-gate.json.
  *
- * Pipeline: oxfmt (format) → oxfmt/eslint (lint check + auto-fix)
+ * Pipeline: oxfmt (format) → oxlint (lint check + auto-fix)
  *
- * Cache: `.omp/lint-strategy.json` in project root.
  * Logs:  `~/.omp/logs/lint-gate.log`
  */
 
 import type { ToolContext } from './lib/tools'
 import type { ExtensionAPI, ExtensionFactory } from './omp-types'
+import { loadConfig } from './lib/config'
 import { writeLog } from './lib/log'
-import { loadStrategy } from './lib/tools'
 import { runFormatPhase } from './phases/format'
 import { runLintPhase } from './phases/lint'
 import { resolveFromToolCall, resolveFromToolResult } from './phases/resolve-path'
@@ -25,6 +22,9 @@ import { resolveFromToolCall, resolveFromToolResult } from './phases/resolve-pat
 const pendingPaths = new Map<string, { toolName: string, timestamp: number }>()
 const fixCounters = new Map<string, number>()
 
+// Load config once per process
+const config = loadConfig()
+
 // ── Extension factory ───────────────────────────────────────────────────
 
 const lintGate: ExtensionFactory = (pi: ExtensionAPI): void => {
@@ -33,10 +33,9 @@ const lintGate: ExtensionFactory = (pi: ExtensionAPI): void => {
   log.info('[lint-gate] extension loaded (format + lint)')
   writeLog('INFO', 'extension loaded (format + lint)')
 
-  // ── session_start: pre-warm strategy cache ──────────────────────────
-  pi.on('session_start', async (_event, ctx) => {
-    const strategy = loadStrategy(ctx.cwd)
-    log.info(`[lint-gate] project strategy: ${strategy.strategy}${strategy.eslintVersion ? ` (eslint@${strategy.eslintVersion})` : ''}`)
+  // ── session_start: log config ───────────────────────────────────────
+  pi.on('session_start', async () => {
+    log.info(`[lint-gate] oxlint bin: ${config.oxlintBin}, config: ${config.configPath ?? '(default)'}, disableNestedConfig: ${config.disableNestedConfig}`)
   })
 
   // ── tool_call: record file path, don't block ────────────────────────
@@ -72,13 +71,14 @@ const lintGate: ExtensionFactory = (pi: ExtensionAPI): void => {
     // Phase 1: Format (oxfmt)
     const formatResult = runFormatPhase(filePath, log)
 
-    // Phase 2: Lint (strategy-dependent)
+    // Phase 2: Lint (oxlint)
     const toolCtx: ToolContext = {
       pi,
       filePath,
       cwd: ctx.cwd,
       fixCount,
       log,
+      config,
     }
     const lintResult = runLintPhase(toolCtx)
 

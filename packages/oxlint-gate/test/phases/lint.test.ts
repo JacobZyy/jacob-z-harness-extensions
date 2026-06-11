@@ -1,7 +1,14 @@
+import type { NormalizedConfig } from '../../src/lib/config'
 import type { ToolContext } from '../../src/lib/tools'
 import { describe, expect, it, vi } from 'vitest'
 import { MAX_FIX_ATTEMPTS } from '../../src/lib/log'
 import { runLintPhase } from '../../src/phases/lint'
+
+const defaultConfig: NormalizedConfig = {
+  oxlintBin: 'oxlint',
+  configPath: undefined,
+  disableNestedConfig: false,
+}
 
 function makeMockLogger() {
   return {
@@ -19,6 +26,7 @@ function makeToolCtx(overrides: Partial<ToolContext> = {}): ToolContext {
     cwd: process.cwd(),
     fixCount: 0,
     log: makeMockLogger() as unknown as ToolContext['log'],
+    config: defaultConfig,
     ...overrides,
   }
 }

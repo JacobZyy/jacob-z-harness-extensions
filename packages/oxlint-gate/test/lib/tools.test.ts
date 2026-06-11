@@ -1,6 +1,13 @@
+import type { NormalizedConfig } from '../../src/lib/config'
 import type { ToolContext } from '../../src/lib/tools'
 import { describe, expect, it, vi } from 'vitest'
 import { runLint } from '../../src/lib/tools'
+
+const defaultConfig: NormalizedConfig = {
+  oxlintBin: 'oxlint',
+  configPath: undefined,
+  disableNestedConfig: false,
+}
 
 function makeMockLogger() {
   return {
@@ -26,12 +33,13 @@ function makeToolCtx(overrides: Partial<ToolContext> = {}): ToolContext {
     cwd: process.cwd(),
     fixCount: 0,
     log: makeMockLogger() as unknown as ToolContext['log'],
+    config: defaultConfig,
     ...overrides,
   }
 }
 
 describe('runLint', () => {
-  it('should return a result (or undefined) based on strategy', () => {
+  it('should return a result (or undefined) based on oxlint', () => {
     const ctx = makeToolCtx({ filePath: 'src/lib/tools.ts' })
     const result = runLint(ctx)
     // Result is either undefined (passed) or a ToolResultEventResult

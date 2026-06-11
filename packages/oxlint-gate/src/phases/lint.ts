@@ -4,7 +4,7 @@ import { MAX_FIX_ATTEMPTS, writeLog } from '../lib/log'
 import { runLint } from '../lib/tools'
 
 /**
- * Lint phase: run the project's configured linter (eslint or oxlint).
+ * Lint phase: run oxlint.
  * Runs after the format phase.
  */
 export function runLintPhase(
