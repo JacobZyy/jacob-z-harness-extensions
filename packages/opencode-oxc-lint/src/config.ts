@@ -10,6 +10,9 @@ export interface OxcLintOptions {
   oxlintBin?: string
   configPath?: string
   disableNestedConfig?: boolean
+  oxfmtBin?: string
+  oxfmtConfigPath?: string
+  oxfmtDisableNestedConfig?: boolean
   extensions?: string[]
   maxLines?: number
   log?: boolean
@@ -20,6 +23,9 @@ export interface NormalizedOptions {
   oxlintBin: string
   configPath: string | undefined
   disableNestedConfig: boolean
+  oxfmtBin: string
+  oxfmtConfigPath: string | undefined
+  oxfmtDisableNestedConfig: boolean
   extensions: string[]
   maxLines: number
   log: boolean
@@ -42,6 +48,9 @@ function isOxcLintOptions(value: unknown): value is OxcLintOptions {
     (value.oxlintBin === undefined || typeof value.oxlintBin === 'string')
     && (value.configPath === undefined || typeof value.configPath === 'string')
     && (value.disableNestedConfig === undefined || typeof value.disableNestedConfig === 'boolean')
+    && (value.oxfmtBin === undefined || typeof value.oxfmtBin === 'string')
+    && (value.oxfmtConfigPath === undefined || typeof value.oxfmtConfigPath === 'string')
+    && (value.oxfmtDisableNestedConfig === undefined || typeof value.oxfmtDisableNestedConfig === 'boolean')
     && (value.extensions === undefined || isStringArray(value.extensions))
     && (value.maxLines === undefined || typeof value.maxLines === 'number')
     && (value.log === undefined || typeof value.log === 'boolean')
@@ -88,6 +97,9 @@ export function normalizeOptions(options: OxcLintOptions = {}): NormalizedOption
     oxlintBin: mergedOptions.oxlintBin ?? 'oxlint',
     configPath: mergedOptions.configPath,
     disableNestedConfig: mergedOptions.disableNestedConfig ?? false,
+    oxfmtBin: mergedOptions.oxfmtBin ?? 'oxfmt',
+    oxfmtConfigPath: mergedOptions.oxfmtConfigPath,
+    oxfmtDisableNestedConfig: mergedOptions.oxfmtDisableNestedConfig ?? false,
     extensions: mergedOptions.extensions ?? DEFAULT_EXTENSIONS,
     maxLines: mergedOptions.maxLines ?? 2000,
     log: mergedOptions.log ?? true,

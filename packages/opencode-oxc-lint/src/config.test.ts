@@ -22,6 +22,9 @@ describe('config', () => {
     expect(options.oxlintBin).toBe('oxlint')
     expect(options.configPath).toBeUndefined()
     expect(options.disableNestedConfig).toBe(false)
+    expect(options.oxfmtBin).toBe('oxfmt')
+    expect(options.oxfmtConfigPath).toBeUndefined()
+    expect(options.oxfmtDisableNestedConfig).toBe(false)
     expect(options.extensions).toEqual(DEFAULT_EXTENSIONS)
     expect(options.maxLines).toBe(2000)
     expect(options.log).toBe(true)
@@ -33,6 +36,9 @@ describe('config', () => {
       oxlintBin: '~/bin/oxlint',
       configPath: './.oxlintrc.json',
       disableNestedConfig: true,
+      oxfmtBin: '~/bin/oxfmt',
+      oxfmtConfigPath: './.oxfmtrc.json',
+      oxfmtDisableNestedConfig: true,
       extensions: ['.ts'],
       maxLines: 500,
       log: false,
@@ -42,6 +48,9 @@ describe('config', () => {
     expect(options.oxlintBin).toBe('~/bin/oxlint')
     expect(options.configPath).toBe('./.oxlintrc.json')
     expect(options.disableNestedConfig).toBe(true)
+    expect(options.oxfmtBin).toBe('~/bin/oxfmt')
+    expect(options.oxfmtConfigPath).toBe('./.oxfmtrc.json')
+    expect(options.oxfmtDisableNestedConfig).toBe(true)
     expect(options.extensions).toEqual(['.ts'])
     expect(options.maxLines).toBe(500)
     expect(options.log).toBe(false)
@@ -68,6 +77,9 @@ describe('config', () => {
         'oxc-lint': {
           configPath: '~/.config/oxc/oxlintrc.json',
           disableNestedConfig: true,
+          oxfmtBin: '~/bin/oxfmt',
+          oxfmtConfigPath: '~/.config/oxc/oxfmtrc.json',
+          oxfmtDisableNestedConfig: true,
           extensions: ['.ts'],
           maxLines: 100,
           log: false,
@@ -82,6 +94,9 @@ describe('config', () => {
     expect(options).toEqual({
       configPath: '~/.config/oxc/oxlintrc.json',
       disableNestedConfig: true,
+      oxfmtBin: '~/bin/oxfmt',
+      oxfmtConfigPath: '~/.config/oxc/oxfmtrc.json',
+      oxfmtDisableNestedConfig: true,
       extensions: ['.ts'],
       maxLines: 100,
       log: false,
