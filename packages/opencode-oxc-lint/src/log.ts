@@ -13,15 +13,18 @@ export interface LogEntry {
 }
 
 export function writeLocalLog(logPath: string, entry: LogEntry): void {
-  const expanded = expandHome(logPath)
-  if (!expanded)
-    return
+  try {
+    const expanded = expandHome(logPath)
+    if (!expanded)
+      return
 
-  const line = JSON.stringify({
-    time: new Date().toISOString(),
-    ...entry,
-  })
+    const line = JSON.stringify({
+      time: new Date().toISOString(),
+      ...entry,
+    })
 
-  mkdirSync(dirname(expanded), { recursive: true })
-  appendFileSync(expanded, `${line}\n`)
+    mkdirSync(dirname(expanded), { recursive: true })
+    appendFileSync(expanded, `${line}\n`)
+  }
+  catch {}
 }

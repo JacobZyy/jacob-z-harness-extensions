@@ -175,17 +175,36 @@ function isSessionIdleEvent(event: { type: string }): event is SessionIdleEvent 
 const plugin: Plugin = async (input, options) => {
   const collector = createCollector()
   const pluginOptions = toOptions(options)
+  const normalized = normalizeOptions(pluginOptions)
+  const logPath = expandHome(normalized.logPath) ?? normalized.logPath
+
+  if (normalized.log) {
+    writeLocalLog(logPath, { action: 'check', summary: 'plugin loaded' })
+  }
 
   return {
     'tool.execute.after': async (hookInput) => {
       collector.collect(hookInput, { cwd: input.directory })
+      if (normalized.log && EDIT_TOOLS.has(hookInput.tool)) {
+        writeLocalLog(logPath, {
+          tool: hookInput.tool,
+          action: 'check',
+          summary: `collected: ${JSON.stringify(extractToolPaths(hookInput.tool, hookInput.args))}`,
+        })
+      }
     },
     'event': async ({ event }) => {
       if (!isSessionIdleEvent(event))
         return
 
+      if (normalized.log) {
+        writeLocalLog(logPath, { action: 'check', summary: `event received: ${event.type}` })
+      }
+
       const sessionID = event.properties.sessionID
-      const result = await handleSessionIdle(sessionID, { cwd: input.directory }, collector, { options: pluginOptions })
+      const result = await handleSessionIdle(sessionID, { cwd: input.directory }, collector, {
+        options: pluginOptions,
+      })
 
       if (result.diagnostics.length > 0) {
         try {
