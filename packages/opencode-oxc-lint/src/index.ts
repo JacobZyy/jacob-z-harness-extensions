@@ -17,6 +17,12 @@ interface ToolAfterInput {
   args: Record<string, unknown>
 }
 
+interface ToolAfterOutput {
+  title: string
+  output: string
+  metadata: unknown
+}
+
 interface RuntimeContext {
   cwd: string
 }
@@ -24,16 +30,12 @@ interface RuntimeContext {
 interface HandlerDependencies {
   options?: OxcLintOptions
   runner?: CommandRunner
-  /** Override the oxfmt binary availability check (useful for tests). */
   oxfmtAvailable?: (bin: string) => boolean
 }
 
 export interface IdleResult {
-  /** Whether the pipeline actually ran on at least one file. */
   ran: boolean
-  /** Files processed by the pipeline. */
   files: string[]
-  /** Remaining diagnostics per file (only when non-empty). */
   diagnostics: string[]
 }
 
@@ -43,13 +45,6 @@ function toOptions(options?: PluginOptions | OxcLintOptions): OxcLintOptions {
 
 const EDIT_TOOLS = new Set(['edit', 'write', 'apply_patch'])
 
-/**
- * Per-session changed-file collector.
- *
- * Files are gathered during `tool.execute.after` (edit/write/apply_patch) and
- * drained once when the session goes idle, so the lint pipeline runs a single
- * batched pass at the end of the turn instead of after every single edit.
- */
 export interface FileCollector {
   collect: (input: ToolAfterInput, ctx: RuntimeContext) => void
   drain: (sessionID: string) => string[]
@@ -88,10 +83,6 @@ export function createCollector(): FileCollector {
   }
 }
 
-/**
- * Run the lint pipeline (oxfmt → oxlint --fix → oxlint) on every file collected
- * for the given session, then drain the collector.
- */
 export async function handleSessionIdle(
   sessionID: string,
   ctx: RuntimeContext,
@@ -163,28 +154,116 @@ export async function handleSessionIdle(
   return { ran: files.length > 0, files, diagnostics }
 }
 
-interface SessionIdleEvent {
-  type: 'session.idle'
-  properties: { sessionID: string }
-}
+/**
+ * Immediate-mode handler: runs the lint pipeline on files touched by
+ * edit/write/apply_patch and injects remaining diagnostics into the tool
+ * output so the LLM can see and fix them in the current turn.
+ *
+ * A per-file-per-session hint counter prevents infinite fix loops: once a
+ * file has been hinted `maxHints` times, further diagnostics are silently
+ * skipped (logged as `skip`).
+ */
+export async function handleToolAfter(
+  input: ToolAfterInput,
+  output: ToolAfterOutput,
+  ctx: RuntimeContext,
+  hintCounts: Map<string, Map<string, number>>,
+  deps: HandlerDependencies = {},
+): Promise<void> {
+  if (!EDIT_TOOLS.has(input.tool))
+    return
 
-function isSessionIdleEvent(event: { type: string }): event is SessionIdleEvent {
-  return event.type === 'session.idle'
+  const options = normalizeOptions(deps.options)
+  const oxlintBin = expandHome(options.oxlintBin) ?? options.oxlintBin
+  const configPath = expandHome(options.configPath)
+  const logPath = expandHome(options.logPath) ?? options.logPath
+  const resolvedOptions = { ...options, oxlintBin, configPath, logPath }
+
+  if (configPath && !existsSync(configPath)) {
+    if (resolvedOptions.log) {
+      writeLocalLog(logPath, {
+        sessionID: input.sessionID,
+        action: 'error',
+        summary: `Configured oxlint config does not exist: ${configPath}`,
+      })
+    }
+    return
+  }
+
+  const paths = extractToolPaths(input.tool, input.args)
+  const files = filterLintableFiles(paths, {
+    cwd: ctx.cwd,
+    extensions: resolvedOptions.extensions,
+    maxLines: resolvedOptions.maxLines,
+  })
+
+  let counts = hintCounts.get(input.sessionID)
+  if (!counts) {
+    counts = new Map()
+    hintCounts.set(input.sessionID, counts)
+  }
+
+  for (const file of files) {
+    const count = counts.get(file) ?? 0
+    if (count >= resolvedOptions.maxHints) {
+      if (resolvedOptions.log) {
+        writeLocalLog(logPath, {
+          sessionID: input.sessionID,
+          file,
+          action: 'skip',
+          summary: `max hints (${resolvedOptions.maxHints}) reached, skipping`,
+        })
+      }
+      continue
+    }
+
+    try {
+      const result = await runPipelineForFile(file, resolvedOptions, {
+        runner: deps.runner,
+        oxfmtAvailable: deps.oxfmtAvailable,
+      })
+
+      if (resolvedOptions.log) {
+        writeLocalLog(logPath, {
+          sessionID: input.sessionID,
+          file,
+          action: result.message ? 'check' : 'fix',
+          exitCode: result.checkExitCode ?? result.fixExitCode,
+          summary: result.message ? 'remaining diagnostics' : 'clean after pipeline',
+        })
+      }
+
+      if (result.message) {
+        counts.set(file, count + 1)
+        output.output += `\n\n[oxc-lint] ${file}:\n${result.message}`
+      }
+    }
+    catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      if (resolvedOptions.log) {
+        writeLocalLog(logPath, {
+          sessionID: input.sessionID,
+          file,
+          action: 'error',
+          summary: message,
+        })
+      }
+    }
+  }
 }
 
 const plugin: Plugin = async (input, options) => {
-  const collector = createCollector()
   const pluginOptions = toOptions(options)
   const normalized = normalizeOptions(pluginOptions)
   const logPath = expandHome(normalized.logPath) ?? normalized.logPath
+  const hintCounts = new Map<string, Map<string, number>>()
 
   if (normalized.log) {
     writeLocalLog(logPath, { action: 'check', summary: 'plugin loaded' })
   }
 
   return {
-    'tool.execute.after': async (hookInput) => {
-      collector.collect(hookInput, { cwd: input.directory })
+    'tool.execute.after': async (hookInput, output) => {
       if (normalized.log && EDIT_TOOLS.has(hookInput.tool)) {
         writeLocalLog(logPath, {
           tool: hookInput.tool,
@@ -192,34 +271,9 @@ const plugin: Plugin = async (input, options) => {
           summary: `collected: ${JSON.stringify(extractToolPaths(hookInput.tool, hookInput.args))}`,
         })
       }
-    },
-    'event': async ({ event }) => {
-      if (!isSessionIdleEvent(event))
-        return
-
-      if (normalized.log) {
-        writeLocalLog(logPath, { action: 'check', summary: `event received: ${event.type}` })
-      }
-
-      const sessionID = event.properties.sessionID
-      const result = await handleSessionIdle(sessionID, { cwd: input.directory }, collector, {
+      await handleToolAfter(hookInput, output, { cwd: input.directory }, hintCounts, {
         options: pluginOptions,
       })
-
-      if (result.diagnostics.length > 0) {
-        try {
-          await input.client.tui.showToast({
-            body: {
-              title: 'oxc-lint',
-              message: `${result.diagnostics.length} file(s) with remaining lint issues`,
-              variant: 'warning',
-            },
-          })
-        }
-        catch {
-          // TUI may be unavailable in headless mode — ignore.
-        }
-      }
     },
   }
 }

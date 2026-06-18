@@ -1,8 +1,8 @@
 {
   "name": "@jacob-z/opencode-oxc-lint",
   "type": "module",
-  "version": "0.2.0",
-  "description": "Run oxfmt + oxlint on changed files when a turn ends in opencode",
+  "version": "0.3.0",
+  "description": "Run oxfmt + oxlint immediately after each edit in opencode, with LLM-visible diagnostics and max-hints loop prevention",
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",

@@ -2,7 +2,17 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-export const DEFAULT_EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx', '.vue', '.mjs', '.cjs', '.mts', '.cts']
+export const DEFAULT_EXTENSIONS = [
+  '.js',
+  '.jsx',
+  '.ts',
+  '.tsx',
+  '.vue',
+  '.mjs',
+  '.cjs',
+  '.mts',
+  '.cts',
+]
 export const HARNESS_CONFIG_PATH = '~/.config/opencode/jacob-z-harness-opencode.json'
 export const HARNESS_CONFIG_FIELD = 'oxc-lint'
 
@@ -17,6 +27,7 @@ export interface OxcLintOptions {
   maxLines?: number
   log?: boolean
   logPath?: string
+  maxHints?: number
 }
 
 export interface NormalizedOptions {
@@ -30,6 +41,7 @@ export interface NormalizedOptions {
   maxLines: number
   log: boolean
   logPath: string
+  maxHints: number
 }
 
 function isStringArray(value: unknown): value is string[] {
@@ -50,11 +62,13 @@ function isOxcLintOptions(value: unknown): value is OxcLintOptions {
     && (value.disableNestedConfig === undefined || typeof value.disableNestedConfig === 'boolean')
     && (value.oxfmtBin === undefined || typeof value.oxfmtBin === 'string')
     && (value.oxfmtConfigPath === undefined || typeof value.oxfmtConfigPath === 'string')
-    && (value.oxfmtDisableNestedConfig === undefined || typeof value.oxfmtDisableNestedConfig === 'boolean')
+    && (value.oxfmtDisableNestedConfig === undefined
+      || typeof value.oxfmtDisableNestedConfig === 'boolean')
     && (value.extensions === undefined || isStringArray(value.extensions))
     && (value.maxLines === undefined || typeof value.maxLines === 'number')
     && (value.log === undefined || typeof value.log === 'boolean')
     && (value.logPath === undefined || typeof value.logPath === 'string')
+    && (value.maxHints === undefined || typeof value.maxHints === 'number')
   )
 }
 
@@ -104,6 +118,7 @@ export function normalizeOptions(options: OxcLintOptions = {}): NormalizedOption
     maxLines: mergedOptions.maxLines ?? 2000,
     log: mergedOptions.log ?? true,
     logPath: mergedOptions.logPath ?? '~/.local/state/opencode-oxc-lint/opencode-oxc-lint.log',
+    maxHints: mergedOptions.maxHints ?? 3,
   }
 }
 
