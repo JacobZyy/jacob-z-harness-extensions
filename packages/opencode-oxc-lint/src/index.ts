@@ -7,8 +7,9 @@ import { existsSync } from 'node:fs'
 import { extname, isAbsolute, join } from 'node:path'
 import { expandHome, normalizeOptions } from './config'
 import { writeLocalLog } from './log'
+import { VOLATILE_TAIL_RE } from './oxlint'
 import { runPipelineForFile } from './pipeline'
-import { extractToolPaths, filterLintableFiles } from './resolve'
+import { extractToolPaths, filterLintableFiles, matchesIgnore } from './resolve'
 
 interface ToolAfterInput {
   tool: string
@@ -39,11 +40,43 @@ export interface IdleResult {
   diagnostics: string[]
 }
 
+export interface ToolAfterResult {
+  filesProcessed: number
+  filesWithDiagnostics: number
+}
+
 function toOptions(options?: PluginOptions | OxcLintOptions): OxcLintOptions {
   return (options ?? {}) as OxcLintOptions
 }
 
 const EDIT_TOOLS = new Set(['edit', 'write', 'apply_patch'])
+
+/**
+ * Per-file hint state: a diagnostics fingerprint + how many times the same
+ * fingerprint has been injected. Replaces the naive counter so that changed
+ * (partially-fixed or new) diagnostics reset the counter, while stuck ones
+ * still bail out after `maxHints` repetitions.
+ */
+export interface HintState {
+  fingerprint: number
+  count: number
+}
+
+/**
+ * djb2 string hash of the stabilized diagnostics text, used to detect
+ * whether the LLM actually changed anything between turns. No external deps.
+ */
+export function hashDiagnostics(message: string): number {
+  const stable = message
+    .split('\n')
+    .filter(line => !VOLATILE_TAIL_RE.test(line))
+    .join('\n')
+  let h = 5381
+  for (let i = 0; i < stable.length; i++) {
+    h = ((h << 5) + h + stable.charCodeAt(i)) | 0
+  }
+  return h
+}
 
 export interface FileCollector {
   collect: (input: ToolAfterInput, ctx: RuntimeContext) => void
@@ -59,7 +92,7 @@ export function createCollector(): FileCollector {
         return
 
       const paths = extractToolPaths(input.tool, input.args)
-      const options = normalizeOptions()
+      const options = normalizeOptions({}, ctx.cwd)
       for (const path of paths) {
         const absolute = isAbsolute(path) ? path : join(ctx.cwd, path)
         if (!existsSync(absolute))
@@ -93,7 +126,7 @@ export async function handleSessionIdle(
   if (pending.length === 0)
     return { ran: false, files: [], diagnostics: [] }
 
-  const options = normalizeOptions(deps.options)
+  const options = normalizeOptions(deps.options, ctx.cwd)
   const oxlintBin = expandHome(options.oxlintBin) ?? options.oxlintBin
   const configPath = expandHome(options.configPath)
   const logPath = expandHome(options.logPath) ?? options.logPath
@@ -159,21 +192,25 @@ export async function handleSessionIdle(
  * edit/write/apply_patch and injects remaining diagnostics into the tool
  * output so the LLM can see and fix them in the current turn.
  *
- * A per-file-per-session hint counter prevents infinite fix loops: once a
- * file has been hinted `maxHints` times, further diagnostics are silently
- * skipped (logged as `skip`).
+ * Loop prevention is fingerprint-based: each file tracks a diagnostics hash +
+ * a count. When the hash is unchanged (LLM can't/won't fix it) the count
+ * rises until `maxHints` is reached, after which the same diagnostics are no
+ * longer injected. When the hash changes (partial fix / new error) the count
+ * resets. When the file goes clean the record is cleared. Behavior of the
+ * injected message is governed by `mode` (fix | notify | silent), and files
+ * matching any `ignore` glob skip the pipeline entirely.
  */
 export async function handleToolAfter(
   input: ToolAfterInput,
   output: ToolAfterOutput,
   ctx: RuntimeContext,
-  hintCounts: Map<string, Map<string, number>>,
+  hintStates: Map<string, Map<string, HintState>>,
   deps: HandlerDependencies = {},
-): Promise<void> {
+): Promise<ToolAfterResult> {
   if (!EDIT_TOOLS.has(input.tool))
-    return
+    return { filesProcessed: 0, filesWithDiagnostics: 0 }
 
-  const options = normalizeOptions(deps.options)
+  const options = normalizeOptions(deps.options, ctx.cwd)
   const oxlintBin = expandHome(options.oxlintBin) ?? options.oxlintBin
   const configPath = expandHome(options.configPath)
   const logPath = expandHome(options.logPath) ?? options.logPath
@@ -187,7 +224,7 @@ export async function handleToolAfter(
         summary: `Configured oxlint config does not exist: ${configPath}`,
       })
     }
-    return
+    return { filesProcessed: 0, filesWithDiagnostics: 0 }
   }
 
   const paths = extractToolPaths(input.tool, input.args)
@@ -197,21 +234,24 @@ export async function handleToolAfter(
     maxLines: resolvedOptions.maxLines,
   })
 
-  let counts = hintCounts.get(input.sessionID)
-  if (!counts) {
-    counts = new Map()
-    hintCounts.set(input.sessionID, counts)
+  let stateMap = hintStates.get(input.sessionID)
+  if (!stateMap) {
+    stateMap = new Map()
+    hintStates.set(input.sessionID, stateMap)
   }
 
+  let filesProcessed = 0
+  let filesWithDiagnostics = 0
+
   for (const file of files) {
-    const count = counts.get(file) ?? 0
-    if (count >= resolvedOptions.maxHints) {
+    // 1. ignore glob 跳过（不跑 pipeline、不计数、不注入）
+    if (matchesIgnore(file, ctx.cwd, resolvedOptions.ignore)) {
       if (resolvedOptions.log) {
         writeLocalLog(logPath, {
           sessionID: input.sessionID,
           file,
           action: 'skip',
-          summary: `max hints (${resolvedOptions.maxHints}) reached, skipping`,
+          summary: 'ignored by glob pattern',
         })
       }
       continue
@@ -233,10 +273,47 @@ export async function handleToolAfter(
         })
       }
 
-      if (result.message) {
-        counts.set(file, count + 1)
-        output.output += `\n\n[oxc-lint] ${file}:\n${result.message}`
+      // 2. pipeline 跑完即计入 processed
+      filesProcessed++
+
+      // 3. clean → 清除指纹记录
+      if (!result.message) {
+        stateMap.delete(file)
+        continue
       }
+
+      // 4. 指纹去重防闭环
+      filesWithDiagnostics++
+      const fingerprint = hashDiagnostics(result.message)
+      const prev = stateMap.get(file)
+      if (prev && prev.fingerprint === fingerprint) {
+        prev.count++
+        if (prev.count > resolvedOptions.maxHints) {
+          if (resolvedOptions.log) {
+            writeLocalLog(logPath, {
+              sessionID: input.sessionID,
+              file,
+              action: 'skip',
+              summary: `max hints (${resolvedOptions.maxHints}) reached, same diagnostics`,
+            })
+          }
+          continue
+        }
+      }
+      else {
+        // 指纹变了（部分修复/新错误）→ 重置计数
+        stateMap.set(file, { fingerprint, count: 1 })
+      }
+
+      // 5. 按 mode 决定是否注入 output
+      if (resolvedOptions.mode === 'silent')
+        continue
+
+      const prefix
+        = resolvedOptions.mode === 'notify'
+          ? '[oxc-lint: informational, no fix needed]'
+          : '[oxc-lint]'
+      output.output += `\n\n${prefix} ${file}:\n${result.message}`
     }
     catch (error) {
       const message = error instanceof Error ? error.message : String(error)
@@ -250,17 +327,31 @@ export async function handleToolAfter(
       }
     }
   }
+
+  return { filesProcessed, filesWithDiagnostics }
 }
 
 const plugin: Plugin = async (input, options) => {
   const pluginOptions = toOptions(options)
-  const normalized = normalizeOptions(pluginOptions)
+  const normalized = normalizeOptions(pluginOptions, input.directory)
   const logPath = expandHome(normalized.logPath) ?? normalized.logPath
-  const hintCounts = new Map<string, Map<string, number>>()
+  const hintStates = new Map<string, Map<string, HintState>>()
 
   if (normalized.log) {
     writeLocalLog(logPath, { action: 'check', summary: 'plugin loaded' })
   }
+
+  setTimeout(() => {
+    input.client.tui
+      .showToast({
+        body: {
+          title: 'oxc-lint',
+          message: 'plugin loaded',
+          variant: 'info',
+        },
+      })
+      .catch(() => {})
+  }, 2000)
 
   return {
     'tool.execute.after': async (hookInput, output) => {
@@ -271,9 +362,29 @@ const plugin: Plugin = async (input, options) => {
           summary: `collected: ${JSON.stringify(extractToolPaths(hookInput.tool, hookInput.args))}`,
         })
       }
-      await handleToolAfter(hookInput, output, { cwd: input.directory }, hintCounts, {
-        options: pluginOptions,
-      })
+      const result = await handleToolAfter(
+        hookInput,
+        output,
+        { cwd: input.directory },
+        hintStates,
+        {
+          options: pluginOptions,
+        },
+      )
+      if (result.filesProcessed > 0) {
+        input.client.tui
+          .showToast({
+            body: {
+              title: 'oxc-lint',
+              message:
+                result.filesWithDiagnostics > 0
+                  ? `${result.filesWithDiagnostics}/${result.filesProcessed} file(s) have lint issues`
+                  : `${result.filesProcessed} file(s) formatted + linted clean`,
+              variant: result.filesWithDiagnostics > 0 ? 'warning' : 'success',
+            },
+          })
+          .catch(() => {})
+      }
     },
   }
 }

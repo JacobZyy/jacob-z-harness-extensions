@@ -1,15 +1,31 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import process from 'node:process'
 
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { __test__, DEFAULT_EXTENSIONS, expandHome, normalizeOptions } from './config'
 
 describe('config', () => {
   const tempDirs: string[] = []
+  // Isolated HOME so normalizeOptions()'s user-level read does not pick up the
+  // developer's real ~/.config/opencode/jacob-z-harness-opencode.json.
+  const isolatedHome = join(
+    tmpdir(),
+    `oxc-config-home-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+  )
+  let originalHome: string | undefined
+
+  beforeEach(() => {
+    mkdirSync(isolatedHome, { recursive: true })
+    tempDirs.push(isolatedHome)
+    originalHome = process.env.HOME
+    process.env.HOME = isolatedHome
+  })
 
   afterEach(() => {
+    process.env.HOME = originalHome
     for (const dir of tempDirs) {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -17,7 +33,7 @@ describe('config', () => {
   })
 
   it('uses generic defaults without personal paths', () => {
-    const options = normalizeOptions()
+    const options = normalizeOptions({}, isolatedHome)
 
     expect(options.oxlintBin).toBe('oxlint')
     expect(options.configPath).toBeUndefined()
@@ -43,7 +59,7 @@ describe('config', () => {
       maxLines: 500,
       log: false,
       logPath: './lint.log',
-    })
+    }, isolatedHome)
 
     expect(options.oxlintBin).toBe('~/bin/oxlint')
     expect(options.configPath).toBe('./.oxlintrc.json')
@@ -103,5 +119,47 @@ describe('config', () => {
       logPath: '~/logs/oxc.log',
       oxlintBin: '~/bin/oxlint',
     })
+  })
+
+  it('defaults mode to fix and ignore to empty', () => {
+    const options = normalizeOptions({}, isolatedHome)
+
+    expect(options.mode).toBe('fix')
+    expect(options.ignore).toEqual([])
+  })
+
+  it('overrides mode and ignore from plugin options', () => {
+    const options = normalizeOptions({ mode: 'silent', ignore: ['dist/**'] }, isolatedHome)
+
+    expect(options.mode).toBe('silent')
+    expect(options.ignore).toEqual(['dist/**'])
+  })
+
+  it('merges project-level .jacob-z config and unions ignore arrays', () => {
+    const cwd = join(
+      tmpdir(),
+      `opencode-oxc-lint-proj-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    )
+    tempDirs.push(cwd)
+    mkdirSync(join(cwd, '.jacob-z'), { recursive: true })
+    writeFileSync(
+      join(cwd, '.jacob-z', 'jacob-z-harness-opencode.json'),
+      JSON.stringify({ 'oxc-lint': { mode: 'notify', ignore: ['dist/**'] } }),
+    )
+
+    const options = normalizeOptions({ ignore: ['**/*.test.ts'] }, cwd)
+
+    expect(options.mode).toBe('notify')
+    expect(options.ignore).toEqual(expect.arrayContaining(['dist/**', '**/*.test.ts']))
+  })
+
+  it('validates mode and ignore fields', () => {
+    expect(__test__.isOxcLintOptions({ mode: 'fix' })).toBe(true)
+    expect(__test__.isOxcLintOptions({ mode: 'notify' })).toBe(true)
+    expect(__test__.isOxcLintOptions({ mode: 'silent' })).toBe(true)
+    expect(__test__.isOxcLintOptions({ mode: 'bogus' })).toBe(false)
+    expect(__test__.isOxcLintOptions({ ignore: ['a', 'b'] })).toBe(true)
+    expect(__test__.isOxcLintOptions({ ignore: 'x' })).toBe(false)
+    expect(__test__.isOxcLintOptions({ ignore: [1] })).toBe(false)
   })
 })

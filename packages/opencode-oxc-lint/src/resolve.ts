@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { extname, isAbsolute, join } from 'node:path'
+import { extname, isAbsolute, join, relative } from 'node:path'
 
 interface FilterOptions {
   cwd: string
@@ -65,4 +65,66 @@ export function filterLintableFiles(paths: string[], options: FilterOptions): st
   }
 
   return Array.from(new Set(result))
+}
+
+/**
+ * Match a single glob pattern against a path.
+ *
+ * Prefers `Bun.Glob` (the runtime opencode ships with). When Bun is not
+ * available — e.g. inside vitest node workers — falls back to a small
+ * glob→regex translator that supports the patterns used in `ignore`
+ * (`**`, `*`, `?`).
+ */
+function globMatch(pattern: string, path: string): boolean {
+  if (typeof Bun !== 'undefined') {
+    return new Bun.Glob(pattern).match(path)
+  }
+  return regexFromGlob(pattern).test(path)
+}
+
+function regexFromGlob(pattern: string): RegExp {
+  let re = ''
+  let i = 0
+  while (i < pattern.length) {
+    const c = pattern[i]
+    if (c === '*' && pattern[i + 1] === '*') {
+      i += 2
+      if (pattern[i] === '/') {
+        i++
+        re += '(?:.*/)?'
+      }
+      else {
+        re += '.*'
+      }
+    }
+    else if (c === '*') {
+      re += '[^/]*'
+      i++
+    }
+    else if (c === '?') {
+      re += '[^/]'
+      i++
+    }
+    else if ('.+^${}()|[]\\'.includes(c)) {
+      re += `\\${c}`
+      i++
+    }
+    else {
+      re += c
+      i++
+    }
+  }
+  return new RegExp(`^${re}$`)
+}
+
+/**
+ * Returns true when `filePath` matches any of the ignore glob patterns.
+ * Patterns are matched against both the cwd-relative path and the raw input.
+ */
+export function matchesIgnore(filePath: string, cwd: string, patterns: string[]): boolean {
+  if (patterns.length === 0)
+    return false
+
+  const rel = isAbsolute(filePath) ? relative(cwd, filePath) : filePath
+  return patterns.some(pattern => globMatch(pattern, rel) || globMatch(pattern, filePath))
 }

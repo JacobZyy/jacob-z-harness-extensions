@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Claude Code Hooks：配置体系与 Stop Hook 闭环防治</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --card: #1a1d27;
+        --border: #2a2e3a;
+        --text: #e4e6eb;
+        --muted: #8b8fa3;
+        --accent: #5b8def;
+        --accent2: #e8a838;
+        --danger: #ef5b5b;
+        --success: #4ec9a0;
+        --code-bg: #15171f;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', 'Noto Sans SC', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.75;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+      h1 {
+        font-size: 1.9rem;
+        margin-bottom: 6px;
+      }
+      h1 .sub {
+        font-size: 1rem;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      h2 {
+        font-size: 1.35rem;
+        margin-top: 48px;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      h2 .num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.85rem;
+      }
+      h3 {
+        font-size: 1.05rem;
+        margin-top: 24px;
+        margin-bottom: 10px;
+        color: var(--accent);
+      }
+      p {
+        margin-bottom: 12px;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 1.02rem;
+        margin-bottom: 28px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 20px;
+        font-size: 0.9rem;
+      }
+      th {
+        background: var(--card);
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid var(--accent);
+      }
+      td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: rgba(91, 141, 239, 0.06);
+      }
+      code {
+        background: var(--code-bg);
+        padding: 2px 7px;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 0.85rem;
+        color: var(--accent2);
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        margin: 12px 0 20px;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: var(--text);
+        font-size: 0.83rem;
+        line-height: 1.6;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 16px 0;
+      }
+      .card.danger {
+        border-left: 3px solid var(--danger);
+      }
+      .card.warn {
+        border-left: 3px solid var(--accent2);
+      }
+      .card.success {
+        border-left: 3px solid var(--success);
+      }
+      .card.info {
+        border-left: 3px solid var(--accent);
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 6px;
+      }
+      .badge.high {
+        background: rgba(239, 91, 91, 0.15);
+        color: var(--danger);
+      }
+      .badge.mid {
+        background: rgba(232, 168, 56, 0.15);
+        color: var(--accent2);
+      }
+      .badge.low {
+        background: rgba(78, 201, 160, 0.15);
+        color: var(--success);
+      }
+      /* 流程图 */
+      .flow {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+      .flow-step {
+        flex: 1;
+        min-width: 130px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: center;
+        font-size: 0.82rem;
+        position: relative;
+      }
+      .flow-step.danger {
+        border-color: var(--danger);
+      }
+      .flow-step .label {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .flow-step .desc {
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+      .flow-arrow {
+        display: flex;
+        align-items: center;
+        color: var(--accent);
+        font-size: 1.3rem;
+        padding: 0 6px;
+      }
+      .flow-loop {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+        color: var(--danger);
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .tag {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 0.82rem;
+      }
+      .tag .k {
+        color: var(--accent2);
+      }
+      ul {
+        margin: 8px 0 16px 20px;
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      .footer {
+        margin-top: 48px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      Claude Code Hooks
+      <br /><span class="sub">配置体系与 Stop Hook 闭环防治深度解析</span>
+    </h1>
+    <p class="lead">
+      当 AI Agent 通过 Hook 注入 Lint 反馈时，如何避免无限循环？本文拆解 Claude Code 的配置层级、Hook
+      机制及其防闭环方案，供技术分享与方案参考。
+    </p>
+
+    <!-- ========== Section 1 ========== -->
+    <h2><span class="num">1</span>配置层级：五层 Deep Merge</h2>
+    <p>
+      Claude Code 从五个来源读取配置，按优先级从低到高 <strong>深度合并</strong>（deep
+      merge），高优先级的键覆盖低优先级：
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>层级</th>
+          <th>路径</th>
+          <th>范围</th>
+          <th>Git</th>
+          <th>优先级</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>User</td>
+          <td><code>~/.claude/settings.json</code></td>
+          <td>当前用户所有项目</td>
+          <td>—</td>
+          <td><span class="badge low">最低</span></td>
+        </tr>
+        <tr>
+          <td>Project</td>
+          <td><code>.claude/settings.json</code></td>
+          <td>当前项目（团队共享）</td>
+          <td>提交</td>
+          <td><span class="badge mid">中</span></td>
+        </tr>
+        <tr>
+          <td>Project Local</td>
+          <td><code>.claude/settings.local.json</code></td>
+          <td>当前项目（个人）</td>
+          <td>gitignore</td>
+          <td><span class="badge mid">中高</span></td>
+        </tr>
+        <tr>
+          <td>CLI</td>
+          <td><code>--settings &lt;file&gt;</code></td>
+          <td>本次运行</td>
+          <td>—</td>
+          <td><span class="badge high">高</span></td>
+        </tr>
+        <tr>
+          <td>Enterprise</td>
+          <td>托管策略</td>
+          <td>组织全员</td>
+          <td>—</td>
+          <td><span class="badge high">最高</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card info">
+      <strong>合并规则</strong>：标量字段（如 <code>model</code>）高优先级覆盖；对象/数组字段（如
+      <code>permissions</code>）深度合并。同级配置不会互斥，而是逐层叠加。
+    </div>
+
+    <pre><code>// ~/.claude/settings.json (User)
+{ "permissions": { "allow": ["Read"], "deny": [] } }
+
+// .claude/settings.json (Project)
+{ "permissions": { "allow": ["Edit"] } }
+
+// .claude/settings.local.json (Local)
+{ "permissions": { "deny": ["Bash(rm -rf:*)"] } }
+
+// ============ 合并结果 ============
+{ "permissions": { "allow": ["Read", "Edit"], "deny": ["Bash(rm -rf:*)"] } }</code></pre>
+
+    <!-- ========== Section 2 ========== -->
+    <h2><span class="num">2</span>Hooks 机制：三种类型 × 十五种事件</h2>
+
+    <h3>Hook 类型</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>type</th>
+          <th>作用</th>
+          <th>是否消耗 Token</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>command</code></td>
+          <td>执行 shell 命令</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td><code>prompt</code></td>
+          <td>注入文本到对话上下文</td>
+          <td>是（注入量）</td>
+        </tr>
+        <tr>
+          <td><code>agent</code></td>
+          <td>启动子 Agent（独立 Claude 实例）</td>
+          <td>是（较多）</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>核心事件与 Exit Code 语义</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>事件</th>
+          <th>触发时机</th>
+          <th>exit 0</th>
+          <th>exit 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>PreToolUse</code></td>
+          <td>工具执行前</td>
+          <td>允许</td>
+          <td>阻止 + stderr 反馈给 Claude</td>
+        </tr>
+        <tr>
+          <td><code>PostToolUse</code></td>
+          <td>工具执行后</td>
+          <td>正常</td>
+          <td>stderr 仍反馈（不阻止，已执行）</td>
+        </tr>
+        <tr>
+          <td><code>Stop</code></td>
+          <td>Claude 完成回复</td>
+          <td>允许停止</td>
+          <td><strong>阻止停止</strong> + 注入反馈 → Claude 继续</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card warn">
+      <strong>关键</strong>：<code>Stop</code> hook 的 <code>exit 2</code>（或 <code>prompt</code>/<code>agent</code>
+      类型）会<strong>阻止 Claude 停止</strong>，并将输出注入对话，让 Claude 继续工作。这正是闭环的根源。
+    </div>
+
+    <!-- ========== Section 3 ========== -->
+    <h2><span class="num">3</span>Stop Hook 闭环问题</h2>
+    <p>当 Stop hook 用于"检查 Lint / 验证完成"时，极易形成无限循环：</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="label">① Stop 触发</div>
+        <div class="desc">Claude 完成回复</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step danger">
+        <div class="label">② Hook 检测到问题</div>
+        <div class="desc">exit 2 / prompt 注入</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step danger">
+        <div class="label">③ Claude 继续</div>
+        <div class="desc">看到反馈，尝试修复</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step danger">
+        <div class="label">④ 完成 → Stop 再触发</div>
+        <div class="desc">回到 ①</div>
+      </div>
+      <div class="flow-loop">↻ 无限循环</div>
+    </div>
+
+    <div class="card danger">
+      <strong>真实案例</strong>：Reddit 用户反馈，Stop hook 中调用了 <code>claude</code> 命令，形成递归循环，<strong
+        >日均消耗 $3600</strong
+      >。这是 Claude Code 社区的高频踩坑点。
+    </div>
+
+    <!-- ========== Section 4 ========== -->
+    <h2><span class="num">4</span>Claude Code 的防闭环方案（两层防护）</h2>
+
+    <h3>第一层：硬熔断（源码内置，确定性）</h3>
+    <div class="card success">
+      <strong>源码逆向确认</strong>：提取 Claude Code 原生二进制（197.5MB）字符串常量交叉验证——Stop hook 连续 block
+      <strong>8 次后强制终止</strong>。可通过环境变量
+      <code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code> 覆盖。这是确定性的硬上限，不依赖 AI 是否"听话"。
+    </div>
+
+    <h3>第二层：stop_hook_active 标志位（提示词约定，非确定性）</h3>
+    <p>
+      社区的标准做法是在 Stop hook 的 prompt 中加入一个"标志位约定"，告诉 Claude 如果已经处于 hook 激活状态就不再触发：
+    </p>
+
+    <pre><code>{
+  "hooks": {
+    "Stop": [
+      {
+        "type": "prompt",
+        "command": "Before finishing, verify:\n1. Did you run lint?\n2. Are there TODO comments left?\nIf any check fails, continue working.\n\nIMPORTANT: If stop_hook_active is true in your context,\ndo NOT trigger this check again — just finish."
+      }
+    ]
+  }
+}</code></pre>
+
+    <div class="card warn">
+      <strong>原理</strong>：第一次 Stop 时，Claude 读到 prompt → 开始检查 → 将 <code>stop_hook_active</code> 置为 true
+      → 继续工作。第二次 Stop 时，Claude 读到 prompt 但发现 <code>stop_hook_active</code> 已为 true → 遵守约定直接停止。
+    </div>
+
+    <h3>此方案的局限性</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>问题</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>非确定性</strong></td>
+          <td>完全依赖 LLM 遵守提示词约定。AI "可能听，可能不听"，无强制力</td>
+        </tr>
+        <tr>
+          <td><strong>无计数 / 去重</strong></td>
+          <td>不跟踪"同一错误已提示几次"，不区分"错误是否变化"</td>
+        </tr>
+        <tr>
+          <td><strong>无熔断</strong></td>
+          <td>没有"达 N 次后硬性停止"的后备保护</td>
+        </tr>
+        <tr>
+          <td><strong>状态不可靠</strong></td>
+          <td><code>stop_hook_active</code> 存于对话上下文，compaction（压缩）后可能丢失</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ========== Section 5 ========== -->
+    <h2><span class="num">5</span>总结：Claude Code vs 理想方案</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Claude Code（现状）</th>
+          <th>理想方案</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>配置层级</td>
+          <td>5 层 deep merge（user→project→local→CLI→enterprise）</td>
+          <td>借鉴层级 + 按 session/repo/user 分级</td>
+        </tr>
+        <tr>
+          <td>Lint 注入方式</td>
+          <td>PostToolUse stderr → Claude（单轮，不触发新对话）</td>
+          <td>tool.execute.after 注入 output.output（同）</td>
+        </tr>
+        <tr>
+          <td>防闭环机制</td>
+          <td>硬熔断 8 次 (<code>STOP_HOOK_BLOCK_CAP</code>) + 提示词 guard</td>
+          <td><strong>指纹去重 + maxHints</strong>（per-file，区分错误变化）</td>
+        </tr>
+        <tr>
+          <td>忽略机制</td>
+          <td>无（只能靠提示词告诉 AI 忽略）</td>
+          <td>mode: silent / notify + ignore glob</td>
+        </tr>
+        <tr>
+          <td>熔断保护</td>
+          <td>无</td>
+          <td>maxHints 硬上限 + 指纹变化重置</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card success">
+      <strong>核心启示</strong>：Claude Code 实际有<strong>两层防护</strong>——硬熔断（8 次 block cap，确定性）兜底 +
+      提示词 guard（软约定）辅助。但 8
+      次是<strong>全局连续计数</strong>，不区分文件、不区分错误是否变化。指纹去重方案更精细：per-file
+      追踪、同错误有限次、变了重置、clean 归零——避免对"修了一半的错误"误杀。
+    </div>
+
+    <div class="footer">
+      <p>
+        数据来源：Claude Code 官方文档（code.claude.com/docs/en/hooks）、社区实践文章、GitHub Issues。整理于
+        2026-06-18。
+      </p>
+    </div>
+  </body>
+</html>

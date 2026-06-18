@@ -14,6 +14,9 @@ const baseOptions: NormalizedOptions = {
   maxLines: 2000,
   log: false,
   logPath: 'unused.log',
+  maxHints: 3,
+  mode: 'fix',
+  ignore: [],
 }
 
 describe('oxlint', () => {
@@ -42,6 +45,18 @@ describe('oxlint', () => {
     const result = await runLintForFile('/tmp/a.ts', baseOptions, async () => ({
       exitCode: 0,
       stdout: '',
+      stderr: '',
+    }))
+
+    expect(result.message).toBeUndefined()
+  })
+
+  it('treats volatile summary-only output as clean (no real diagnostics)', async () => {
+    // oxlint emits "Found 0 warnings and 0 errors." even when there is nothing
+    // to report. Such output must not be mistaken for real diagnostics.
+    const result = await runLintForFile('/tmp/a.ts', baseOptions, async () => ({
+      exitCode: 0,
+      stdout: 'Found 0 warnings and 0 errors.\nFinished in 3ms on 1 file with 182 rules using 10 threads',
       stderr: '',
     }))
 

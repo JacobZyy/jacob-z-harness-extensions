@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { countLines, extractToolPaths, filterLintableFiles } from './resolve'
+import { countLines, extractToolPaths, filterLintableFiles, matchesIgnore } from './resolve'
 
 describe('resolve', () => {
   let dir: string
@@ -86,5 +86,14 @@ describe('resolve', () => {
     })
 
     expect(files).toEqual([source])
+  })
+
+  it('matches ignore glob patterns against cwd-relative paths', () => {
+    expect(matchesIgnore(join(dir, 'dist', 'a.js'), dir, ['dist/**'])).toBe(true)
+    expect(matchesIgnore(join(dir, 'src', 'a.ts'), dir, ['dist/**'])).toBe(false)
+    expect(matchesIgnore(join(dir, 'src', 'generated', 'g.ts'), dir, ['src/generated/**'])).toBe(true)
+    expect(matchesIgnore(join(dir, 'src', 'a.ts'), dir, ['src/generated/**'])).toBe(false)
+    expect(matchesIgnore('rel/a.test.ts', dir, ['**/*.test.ts'])).toBe(true)
+    expect(matchesIgnore(join(dir, 'a.ts'), dir, [])).toBe(false)
   })
 })

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import process from 'node:process'
 
 export const DEFAULT_EXTENSIONS = [
   '.js',
@@ -15,6 +16,15 @@ export const DEFAULT_EXTENSIONS = [
 ]
 export const HARNESS_CONFIG_PATH = '~/.config/opencode/jacob-z-harness-opencode.json'
 export const HARNESS_CONFIG_FIELD = 'oxc-lint'
+export const PROJECT_CONFIG_RELATIVE = join('.jacob-z', 'jacob-z-harness-opencode.json')
+
+export type OxcLintMode = 'fix' | 'notify' | 'silent'
+
+const MODE_VALUES: ReadonlySet<string> = new Set(['fix', 'notify', 'silent'])
+
+function isOxcLintMode(value: unknown): value is OxcLintMode {
+  return typeof value === 'string' && MODE_VALUES.has(value)
+}
 
 export interface OxcLintOptions {
   oxlintBin?: string
@@ -28,6 +38,8 @@ export interface OxcLintOptions {
   log?: boolean
   logPath?: string
   maxHints?: number
+  mode?: OxcLintMode
+  ignore?: string[]
 }
 
 export interface NormalizedOptions {
@@ -42,6 +54,8 @@ export interface NormalizedOptions {
   log: boolean
   logPath: string
   maxHints: number
+  mode: OxcLintMode
+  ignore: string[]
 }
 
 function isStringArray(value: unknown): value is string[] {
@@ -69,6 +83,8 @@ function isOxcLintOptions(value: unknown): value is OxcLintOptions {
     && (value.log === undefined || typeof value.log === 'boolean')
     && (value.logPath === undefined || typeof value.logPath === 'string')
     && (value.maxHints === undefined || typeof value.maxHints === 'number')
+    && (value.mode === undefined || isOxcLintMode(value.mode))
+    && (value.ignore === undefined || isStringArray(value.ignore))
   )
 }
 
@@ -103,9 +119,20 @@ export function expandHome(value: string | undefined, home = homedir()): string 
   return value
 }
 
-export function normalizeOptions(options: OxcLintOptions = {}): NormalizedOptions {
-  const harnessOptions = readHarnessOptions()
-  const mergedOptions = { ...harnessOptions, ...options }
+export function normalizeOptions(
+  options: OxcLintOptions = {},
+  cwd: string = process.cwd(),
+): NormalizedOptions {
+  const userOptions = readHarnessOptions(HARNESS_CONFIG_PATH)
+  const projectOptions = readHarnessOptions(join(cwd, PROJECT_CONFIG_RELATIVE))
+  const mergedOptions: OxcLintOptions = { ...userOptions, ...projectOptions, ...options }
+
+  // ignore 数组取并集（user ∪ project ∪ inline）
+  const ignore = [
+    ...(userOptions.ignore ?? []),
+    ...(projectOptions.ignore ?? []),
+    ...(options.ignore ?? []),
+  ]
 
   return {
     oxlintBin: mergedOptions.oxlintBin ?? 'oxlint',
@@ -119,6 +146,8 @@ export function normalizeOptions(options: OxcLintOptions = {}): NormalizedOption
     log: mergedOptions.log ?? true,
     logPath: mergedOptions.logPath ?? '~/.local/state/opencode-oxc-lint/opencode-oxc-lint.log',
     maxHints: mergedOptions.maxHints ?? 3,
+    mode: mergedOptions.mode ?? 'fix',
+    ignore,
   }
 }
 

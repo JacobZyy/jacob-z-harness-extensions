@@ -14,7 +14,11 @@ export interface LintRunResult {
   checkExitCode?: number
 }
 
-export function buildOxlintArgs(filePath: string, options: NormalizedOptions, fix: boolean): string[] {
+export function buildOxlintArgs(
+  filePath: string,
+  options: NormalizedOptions,
+  fix: boolean,
+): string[] {
   const args: string[] = []
 
   if (options.configPath) {
@@ -52,6 +56,20 @@ function joinOutput(result: CommandResult): string {
   return [result.stdout.trim(), result.stderr.trim()].filter(Boolean).join('\n')
 }
 
+/**
+ * oxlint output lines that carry no diagnostic meaning — rule counts and
+ * timing vary run-to-run. oxlint emits them even when there are zero
+ * diagnostics (`Found 0 warnings and 0 errors.` / `Finished in 3ms ...`),
+ * so they must not be treated as real diagnostics when deciding whether a
+ * file is clean. Shared with `hashDiagnostics` so the fingerprint stays
+ * stable across runs.
+ */
+export const VOLATILE_TAIL_RE = /^(?:Found \d+ warning|Finished in )/
+
+function hasRealDiagnostics(output: string): boolean {
+  return output.split('\n').some(line => line.trim().length > 0 && !VOLATILE_TAIL_RE.test(line))
+}
+
 export async function runLintForFile(
   filePath: string,
   options: NormalizedOptions,
@@ -60,12 +78,17 @@ export async function runLintForFile(
   const fix = await runner(options.oxlintBin, buildOxlintArgs(filePath, options, true))
   const fixOutput = joinOutput(fix)
 
-  if (fix.exitCode === 0 && fixOutput.length === 0) {
+  if (fix.exitCode === 0 && !hasRealDiagnostics(fixOutput)) {
     return { fixExitCode: fix.exitCode }
   }
 
   const check = await runner(options.oxlintBin, buildOxlintArgs(filePath, options, false))
   const checkOutput = joinOutput(check)
+
+  // No real diagnostics in either pass (only volatile summary lines) → clean.
+  if (!hasRealDiagnostics(checkOutput) && !hasRealDiagnostics(fixOutput)) {
+    return { fixExitCode: fix.exitCode, checkExitCode: check.exitCode }
+  }
 
   return {
     message: checkOutput || fixOutput,
