@@ -5,7 +5,7 @@ import process from 'node:process'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { __test__, DEFAULT_EXTENSIONS, expandHome, normalizeOptions } from './config'
+import { __test__, DEFAULT_EXTENSIONS, expandHome, normalizeOptions } from '../../src/core/config'
 
 describe('config', () => {
   const tempDirs: string[] = []
@@ -35,38 +35,46 @@ describe('config', () => {
   it('uses generic defaults without personal paths', () => {
     const options = normalizeOptions({}, isolatedHome)
 
-    expect(options.oxlintBin).toBe('oxlint')
-    expect(options.configPath).toBeUndefined()
-    expect(options.disableNestedConfig).toBe(false)
-    expect(options.oxfmtBin).toBe('oxfmt')
-    expect(options.oxfmtConfigPath).toBeUndefined()
-    expect(options.oxfmtDisableNestedConfig).toBe(false)
+    expect(options.linter).toBe('oxlint')
+    expect(options.oxlint.bin).toBe('oxlint')
+    expect(options.oxlint.configPath).toBeUndefined()
+    expect(options.oxlint.disableNestedConfig).toBe(false)
+    expect(options.oxlint.oxfmt.bin).toBe('oxfmt')
+    expect(options.oxlint.oxfmt.configPath).toBeUndefined()
+    expect(options.oxlint.oxfmt.disableNestedConfig).toBe(false)
+    expect(options.eslint.bin).toBe('eslint')
+    expect(options.eslint.configPath).toBeUndefined()
     expect(options.extensions).toEqual(DEFAULT_EXTENSIONS)
     expect(options.maxLines).toBe(2000)
     expect(options.log).toBe(true)
     expect(options.logPath).toBe('~/.local/state/opencode-oxc-lint/opencode-oxc-lint.log')
   })
 
-  it('overrides defaults from plugin options', () => {
+  it('overrides defaults from grouped plugin options', () => {
     const options = normalizeOptions({
-      oxlintBin: '~/bin/oxlint',
-      configPath: './.oxlintrc.json',
-      disableNestedConfig: true,
-      oxfmtBin: '~/bin/oxfmt',
-      oxfmtConfigPath: './.oxfmtrc.json',
-      oxfmtDisableNestedConfig: true,
+      linter: 'eslint',
+      oxlint: {
+        bin: '~/bin/oxlint',
+        configPath: './.oxlintrc.json',
+        disableNestedConfig: true,
+        oxfmt: { bin: '~/bin/oxfmt', configPath: './.oxfmtrc.json', disableNestedConfig: true },
+      },
+      eslint: { bin: '~/bin/eslint', configPath: './eslint.config.js' },
       extensions: ['.ts'],
       maxLines: 500,
       log: false,
       logPath: './lint.log',
     }, isolatedHome)
 
-    expect(options.oxlintBin).toBe('~/bin/oxlint')
-    expect(options.configPath).toBe('./.oxlintrc.json')
-    expect(options.disableNestedConfig).toBe(true)
-    expect(options.oxfmtBin).toBe('~/bin/oxfmt')
-    expect(options.oxfmtConfigPath).toBe('./.oxfmtrc.json')
-    expect(options.oxfmtDisableNestedConfig).toBe(true)
+    expect(options.linter).toBe('eslint')
+    expect(options.oxlint.bin).toBe('~/bin/oxlint')
+    expect(options.oxlint.configPath).toBe('./.oxlintrc.json')
+    expect(options.oxlint.disableNestedConfig).toBe(true)
+    expect(options.oxlint.oxfmt.bin).toBe('~/bin/oxfmt')
+    expect(options.oxlint.oxfmt.configPath).toBe('./.oxfmtrc.json')
+    expect(options.oxlint.oxfmt.disableNestedConfig).toBe(true)
+    expect(options.eslint.bin).toBe('~/bin/eslint')
+    expect(options.eslint.configPath).toBe('./eslint.config.js')
     expect(options.extensions).toEqual(['.ts'])
     expect(options.maxLines).toBe(500)
     expect(options.log).toBe(false)
@@ -81,8 +89,11 @@ describe('config', () => {
     expect(expandHome(undefined, home)).toBeUndefined()
   })
 
-  it('reads defaults from the harness oxc-lint field', () => {
-    const home = join(tmpdir(), `opencode-oxc-lint-config-${Date.now()}-${Math.random().toString(16).slice(2)}`)
+  it('reads grouped options from the harness oxc-lint field', () => {
+    const home = join(
+      tmpdir(),
+      `opencode-oxc-lint-config-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    )
     tempDirs.push(home)
     const configDir = join(home, '.config', 'opencode')
     mkdirSync(configDir, { recursive: true })
@@ -91,16 +102,22 @@ describe('config', () => {
       configPath,
       JSON.stringify({
         'oxc-lint': {
-          configPath: '~/.config/oxc/oxlintrc.json',
-          disableNestedConfig: true,
-          oxfmtBin: '~/bin/oxfmt',
-          oxfmtConfigPath: '~/.config/oxc/oxfmtrc.json',
-          oxfmtDisableNestedConfig: true,
+          linter: 'eslint',
+          oxlint: {
+            bin: '~/bin/oxlint',
+            configPath: '~/.config/oxc/oxlintrc.json',
+            disableNestedConfig: true,
+            oxfmt: {
+              bin: '~/bin/oxfmt',
+              configPath: '~/.config/oxc/oxfmtrc.json',
+              disableNestedConfig: true,
+            },
+          },
+          eslint: { bin: '~/bin/eslint', configPath: './eslint.config.js' },
           extensions: ['.ts'],
           maxLines: 100,
           log: false,
           logPath: '~/logs/oxc.log',
-          oxlintBin: '~/bin/oxlint',
         },
       }),
     )
@@ -108,16 +125,22 @@ describe('config', () => {
     const options = __test__.readHarnessOptions('~/.config/opencode/jacob-z-harness-opencode.json', home)
 
     expect(options).toEqual({
-      configPath: '~/.config/oxc/oxlintrc.json',
-      disableNestedConfig: true,
-      oxfmtBin: '~/bin/oxfmt',
-      oxfmtConfigPath: '~/.config/oxc/oxfmtrc.json',
-      oxfmtDisableNestedConfig: true,
+      linter: 'eslint',
+      oxlint: {
+        bin: '~/bin/oxlint',
+        configPath: '~/.config/oxc/oxlintrc.json',
+        disableNestedConfig: true,
+        oxfmt: {
+          bin: '~/bin/oxfmt',
+          configPath: '~/.config/oxc/oxfmtrc.json',
+          disableNestedConfig: true,
+        },
+      },
+      eslint: { bin: '~/bin/eslint', configPath: './eslint.config.js' },
       extensions: ['.ts'],
       maxLines: 100,
       log: false,
       logPath: '~/logs/oxc.log',
-      oxlintBin: '~/bin/oxlint',
     })
   })
 
@@ -153,7 +176,10 @@ describe('config', () => {
     expect(options.ignore).toEqual(expect.arrayContaining(['dist/**', '**/*.test.ts']))
   })
 
-  it('validates mode and ignore fields', () => {
+  it('validates linter, mode, ignore and grouped linter fields', () => {
+    expect(__test__.isOxcLintOptions({ linter: 'oxlint' })).toBe(true)
+    expect(__test__.isOxcLintOptions({ linter: 'eslint' })).toBe(true)
+    expect(__test__.isOxcLintOptions({ linter: 'bogus' })).toBe(false)
     expect(__test__.isOxcLintOptions({ mode: 'fix' })).toBe(true)
     expect(__test__.isOxcLintOptions({ mode: 'notify' })).toBe(true)
     expect(__test__.isOxcLintOptions({ mode: 'silent' })).toBe(true)
@@ -161,5 +187,11 @@ describe('config', () => {
     expect(__test__.isOxcLintOptions({ ignore: ['a', 'b'] })).toBe(true)
     expect(__test__.isOxcLintOptions({ ignore: 'x' })).toBe(false)
     expect(__test__.isOxcLintOptions({ ignore: [1] })).toBe(false)
+    expect(__test__.isOxcLintOptions({ oxlint: { bin: 'x' } })).toBe(true)
+    expect(__test__.isOxcLintOptions({ oxlint: { bin: 1 } })).toBe(false)
+    expect(__test__.isOxcLintOptions({ oxlint: { oxfmt: { bin: 'x' } } })).toBe(true)
+    expect(__test__.isOxcLintOptions({ oxlint: { oxfmt: { disableNestedConfig: 'yes' } } })).toBe(false)
+    expect(__test__.isOxcLintOptions({ eslint: { configPath: 'x' } })).toBe(true)
+    expect(__test__.isOxcLintOptions({ eslint: { bin: 1 } })).toBe(false)
   })
 })

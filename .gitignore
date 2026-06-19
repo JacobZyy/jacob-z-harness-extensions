@@ -6,3 +6,5 @@ dist/
 .env
 .npmrc
 .worktrees/
+/.idea/*
+.jacob-z/

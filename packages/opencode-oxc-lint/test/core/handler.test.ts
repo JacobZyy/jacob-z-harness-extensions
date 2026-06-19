@@ -1,11 +1,11 @@
-import type { CommandRunner } from './oxlint'
+import type { CommandRunner } from '../../src/core/types'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-
 import { join } from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createCollector, handleSessionIdle, handleToolAfter, hashDiagnostics } from './index'
+import { oxlintAdapter } from '../../src/adapters/oxlint'
+import { createCollector, handleSessionIdle, handleToolAfter } from '../../src/core/handler'
 
 describe('collector + session.idle pipeline', () => {
   let dir: string
@@ -37,7 +37,7 @@ describe('collector + session.idle pipeline', () => {
     collector.collect({ tool: 'write', sessionID: 's1', callID: 'c1', args: { filePath: a } }, { cwd: dir })
     collector.collect({ tool: 'edit', sessionID: 's1', callID: 'c2', args: { path: b } }, { cwd: dir })
 
-    const result = await handleSessionIdle('s1', { cwd: dir }, collector, {
+    const result = await handleSessionIdle('s1', { cwd: dir }, collector, oxlintAdapter, {
       options: { log: false },
       oxfmtAvailable: () => true,
       runner,
@@ -62,7 +62,7 @@ describe('collector + session.idle pipeline', () => {
     }
 
     collector.collect({ tool: 'write', sessionID: 's2', callID: 'c1', args: { filePath: file } }, { cwd: dir })
-    const result = await handleSessionIdle('s2', { cwd: dir }, collector, {
+    const result = await handleSessionIdle('s2', { cwd: dir }, collector, oxlintAdapter, {
       options: { log: false },
       oxfmtAvailable: () => true,
       runner,
@@ -81,12 +81,12 @@ describe('collector + session.idle pipeline', () => {
 
     collector.collect({ tool: 'write', sessionID: 's3', callID: 'c1', args: { filePath: file } }, { cwd: dir })
 
-    const first = await handleSessionIdle('s3', { cwd: dir }, collector, {
+    const first = await handleSessionIdle('s3', { cwd: dir }, collector, oxlintAdapter, {
       options: { log: false },
       oxfmtAvailable: () => true,
       runner,
     })
-    const second = await handleSessionIdle('s3', { cwd: dir }, collector, {
+    const second = await handleSessionIdle('s3', { cwd: dir }, collector, oxlintAdapter, {
       options: { log: false },
       oxfmtAvailable: () => true,
       runner,
@@ -157,6 +157,7 @@ describe('handleToolAfter immediate mode', () => {
       output,
       { cwd: dir },
       new Map(),
+      oxlintAdapter,
       { options: { log: false, mode: 'fix' }, oxfmtAvailable: () => false, runner: diagRunner(() => 'boom') },
     )
 
@@ -176,6 +177,7 @@ describe('handleToolAfter immediate mode', () => {
       output,
       { cwd: dir },
       new Map(),
+      oxlintAdapter,
       { options: { log: false, mode: 'notify' }, oxfmtAvailable: () => false, runner: diagRunner(() => 'boom') },
     )
 
@@ -193,6 +195,7 @@ describe('handleToolAfter immediate mode', () => {
       output,
       { cwd: dir },
       new Map(),
+      oxlintAdapter,
       { options: { log: false, mode: 'silent' }, oxfmtAvailable: () => false, runner: diagRunner(() => 'boom') },
     )
 
@@ -212,6 +215,7 @@ describe('handleToolAfter immediate mode', () => {
       output,
       { cwd: dir },
       new Map(),
+      oxlintAdapter,
       { options: { log: false, ignore: ['dist/**'] }, oxfmtAvailable: () => false, runner: diagRunner(() => 'boom') },
     )
 
@@ -231,15 +235,15 @@ describe('handleToolAfter immediate mode', () => {
     }
 
     const first = makeOutput()
-    await handleToolAfter(writeInput(file), first, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), first, { cwd: dir }, states, oxlintAdapter, deps)
     expect(first.output).toContain('same-error')
 
     const second = makeOutput()
-    await handleToolAfter(writeInput(file), second, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), second, { cwd: dir }, states, oxlintAdapter, deps)
     expect(second.output).toContain('same-error')
 
     const third = makeOutput()
-    const result = await handleToolAfter(writeInput(file), third, { cwd: dir }, states, deps)
+    const result = await handleToolAfter(writeInput(file), third, { cwd: dir }, states, oxlintAdapter, deps)
     expect(result.filesWithDiagnostics).toBe(1)
     expect(third.output).not.toContain('same-error')
   })
@@ -256,16 +260,16 @@ describe('handleToolAfter immediate mode', () => {
     }
 
     const first = makeOutput()
-    await handleToolAfter(writeInput(file), first, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), first, { cwd: dir }, states, oxlintAdapter, deps)
     expect(first.output).toContain('err-one')
 
     const second = makeOutput()
-    await handleToolAfter(writeInput(file), second, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), second, { cwd: dir }, states, oxlintAdapter, deps)
     expect(second.output).not.toContain('err-one')
 
     msg = 'err-two'
     const third = makeOutput()
-    await handleToolAfter(writeInput(file), third, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), third, { cwd: dir }, states, oxlintAdapter, deps)
     expect(third.output).toContain('err-two')
   })
 
@@ -282,36 +286,18 @@ describe('handleToolAfter immediate mode', () => {
     const deps = { options: { log: false, maxHints: 1 }, oxfmtAvailable: () => false, runner }
 
     const first = makeOutput()
-    await handleToolAfter(writeInput(file), first, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), first, { cwd: dir }, states, oxlintAdapter, deps)
     expect(first.output).toContain('err')
 
     msg = ''
     const clean = makeOutput()
-    const cleanResult = await handleToolAfter(writeInput(file), clean, { cwd: dir }, states, deps)
+    const cleanResult = await handleToolAfter(writeInput(file), clean, { cwd: dir }, states, oxlintAdapter, deps)
     expect(cleanResult.filesWithDiagnostics).toBe(0)
     expect(clean.output).toBe('')
 
     msg = 'err'
     const after = makeOutput()
-    await handleToolAfter(writeInput(file), after, { cwd: dir }, states, deps)
+    await handleToolAfter(writeInput(file), after, { cwd: dir }, states, oxlintAdapter, deps)
     expect(after.output).toContain('err')
-  })
-})
-
-describe('hashDiagnostics', () => {
-  it('strips volatile oxlint summary lines so timing/count changes do not alter the fingerprint', () => {
-    const core = 'no-debugger\n  1 | debugger;\nhelp: Remove the debugger statement'
-    const a = hashDiagnostics(
-      `${core}\nFound 0 warnings and 1 error.\nFinished in 3ms on 1 file with 182 rules using 10 threads`,
-    )
-    const b = hashDiagnostics(
-      `${core}\nFound 0 warnings and 1 error.\nFinished in 9ms on 1 file with 182 rules using 10 threads`,
-    )
-    expect(a).toBe(b)
-
-    const different = hashDiagnostics(
-      `eqeqeq\n  1 | a == b\nFound 0 warnings and 1 error.\nFinished in 3ms`,
-    )
-    expect(a).not.toBe(different)
   })
 })

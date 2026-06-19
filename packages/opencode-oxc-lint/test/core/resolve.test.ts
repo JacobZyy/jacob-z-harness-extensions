@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { countLines, extractToolPaths, filterLintableFiles, matchesIgnore } from './resolve'
+import { countLines, extractToolPaths, filterLintableFiles, matchesIgnore } from '../../src/core/resolve'
 
 describe('resolve', () => {
   let dir: string

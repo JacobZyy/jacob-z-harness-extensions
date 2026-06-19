@@ -1,34 +1,35 @@
-import type { NormalizedOptions } from './config'
+import type { NormalizedOptions } from '../../src/core/types'
 
 import { describe, expect, it } from 'vitest'
-import { buildOxfmtArgs, runOxfmtForFile } from './oxfmt'
+import { buildOxfmtArgs, runOxfmtForFile } from '../../src/adapters/oxfmt'
 
 const baseOptions: NormalizedOptions = {
-  oxlintBin: 'oxlint',
-  configPath: undefined,
-  disableNestedConfig: false,
-  oxfmtBin: 'oxfmt',
-  oxfmtConfigPath: undefined,
-  oxfmtDisableNestedConfig: false,
+  linter: 'oxlint',
   extensions: ['.ts'],
   maxLines: 2000,
   log: false,
   logPath: 'unused.log',
+  maxHints: 3,
+  mode: 'fix',
+  ignore: [],
+  oxlint: {
+    bin: 'oxlint',
+    configPath: undefined,
+    disableNestedConfig: false,
+    oxfmt: { bin: 'oxfmt', configPath: undefined, disableNestedConfig: false },
+  },
+  eslint: { bin: 'eslint', configPath: undefined },
 }
 
 describe('oxfmt', () => {
   it('builds args with just the file path by default', () => {
-    expect(buildOxfmtArgs('/tmp/a.ts', baseOptions)).toEqual(['/tmp/a.ts'])
+    expect(buildOxfmtArgs('/tmp/a.ts', baseOptions.oxlint.oxfmt)).toEqual(['/tmp/a.ts'])
   })
 
   it('adds config and nested config flags', () => {
-    const options = {
-      ...baseOptions,
-      oxfmtConfigPath: './.oxfmtrc.json',
-      oxfmtDisableNestedConfig: true,
-    }
+    const oxfmt = { bin: 'oxfmt', configPath: './.oxfmtrc.json', disableNestedConfig: true }
 
-    expect(buildOxfmtArgs('/tmp/a.ts', options)).toEqual([
+    expect(buildOxfmtArgs('/tmp/a.ts', oxfmt)).toEqual([
       '-c',
       './.oxfmtrc.json',
       '--disable-nested-config',

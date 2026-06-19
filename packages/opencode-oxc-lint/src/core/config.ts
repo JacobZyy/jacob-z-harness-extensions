@@ -1,6 +1,18 @@
+import type {
+  EslinterConfig,
+  LinterName,
+  NormalizedEslinter,
+  NormalizedOptions,
+  NormalizedOxfmt,
+  NormalizedOxlinter,
+  OxcLintMode,
+  OxfmtConfig,
+  OxlinterConfig,
+} from './types'
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+
 import process from 'node:process'
 
 export const DEFAULT_EXTENSIONS = [
@@ -18,21 +30,23 @@ export const HARNESS_CONFIG_PATH = '~/.config/opencode/jacob-z-harness-opencode.
 export const HARNESS_CONFIG_FIELD = 'oxc-lint'
 export const PROJECT_CONFIG_RELATIVE = join('.jacob-z', 'jacob-z-harness-opencode.json')
 
-export type OxcLintMode = 'fix' | 'notify' | 'silent'
-
 const MODE_VALUES: ReadonlySet<string> = new Set(['fix', 'notify', 'silent'])
+const LINTER_VALUES: ReadonlySet<string> = new Set(['oxlint', 'eslint'])
 
 function isOxcLintMode(value: unknown): value is OxcLintMode {
   return typeof value === 'string' && MODE_VALUES.has(value)
 }
 
+function isLinterName(value: unknown): value is LinterName {
+  return typeof value === 'string' && LINTER_VALUES.has(value)
+}
+
+// ---------------------------------------------------------------------------
+// Input options (grouped per linter)
+// ---------------------------------------------------------------------------
+
 export interface OxcLintOptions {
-  oxlintBin?: string
-  configPath?: string
-  disableNestedConfig?: boolean
-  oxfmtBin?: string
-  oxfmtConfigPath?: string
-  oxfmtDisableNestedConfig?: boolean
+  linter?: LinterName
   extensions?: string[]
   maxLines?: number
   log?: boolean
@@ -40,23 +54,13 @@ export interface OxcLintOptions {
   maxHints?: number
   mode?: OxcLintMode
   ignore?: string[]
+  oxlint?: OxlinterConfig
+  eslint?: EslinterConfig
 }
 
-export interface NormalizedOptions {
-  oxlintBin: string
-  configPath: string | undefined
-  disableNestedConfig: boolean
-  oxfmtBin: string
-  oxfmtConfigPath: string | undefined
-  oxfmtDisableNestedConfig: boolean
-  extensions: string[]
-  maxLines: number
-  log: boolean
-  logPath: string
-  maxHints: number
-  mode: OxcLintMode
-  ignore: string[]
-}
+// ---------------------------------------------------------------------------
+// Validation helpers
+// ---------------------------------------------------------------------------
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every(item => typeof item === 'string')
@@ -66,18 +70,42 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+function isOxfmtConfig(value: unknown): value is OxfmtConfig {
+  if (!isRecord(value))
+    return false
+  return (
+    (value.bin === undefined || typeof value.bin === 'string')
+    && (value.configPath === undefined || typeof value.configPath === 'string')
+    && (value.disableNestedConfig === undefined || typeof value.disableNestedConfig === 'boolean')
+  )
+}
+
+function isOxlinterConfig(value: unknown): value is OxlinterConfig {
+  if (!isRecord(value))
+    return false
+  return (
+    (value.bin === undefined || typeof value.bin === 'string')
+    && (value.configPath === undefined || typeof value.configPath === 'string')
+    && (value.disableNestedConfig === undefined || typeof value.disableNestedConfig === 'boolean')
+    && (value.oxfmt === undefined || isOxfmtConfig(value.oxfmt))
+  )
+}
+
+function isEslinterConfig(value: unknown): value is EslinterConfig {
+  if (!isRecord(value))
+    return false
+  return (
+    (value.bin === undefined || typeof value.bin === 'string')
+    && (value.configPath === undefined || typeof value.configPath === 'string')
+  )
+}
+
 function isOxcLintOptions(value: unknown): value is OxcLintOptions {
   if (!isRecord(value))
     return false
 
   return (
-    (value.oxlintBin === undefined || typeof value.oxlintBin === 'string')
-    && (value.configPath === undefined || typeof value.configPath === 'string')
-    && (value.disableNestedConfig === undefined || typeof value.disableNestedConfig === 'boolean')
-    && (value.oxfmtBin === undefined || typeof value.oxfmtBin === 'string')
-    && (value.oxfmtConfigPath === undefined || typeof value.oxfmtConfigPath === 'string')
-    && (value.oxfmtDisableNestedConfig === undefined
-      || typeof value.oxfmtDisableNestedConfig === 'boolean')
+    (value.linter === undefined || isLinterName(value.linter))
     && (value.extensions === undefined || isStringArray(value.extensions))
     && (value.maxLines === undefined || typeof value.maxLines === 'number')
     && (value.log === undefined || typeof value.log === 'boolean')
@@ -85,6 +113,8 @@ function isOxcLintOptions(value: unknown): value is OxcLintOptions {
     && (value.maxHints === undefined || typeof value.maxHints === 'number')
     && (value.mode === undefined || isOxcLintMode(value.mode))
     && (value.ignore === undefined || isStringArray(value.ignore))
+    && (value.oxlint === undefined || isOxlinterConfig(value.oxlint))
+    && (value.eslint === undefined || isEslinterConfig(value.eslint))
   )
 }
 
@@ -119,6 +149,34 @@ export function expandHome(value: string | undefined, home = homedir()): string 
   return value
 }
 
+// ---------------------------------------------------------------------------
+// Normalization
+// ---------------------------------------------------------------------------
+
+function normalizeOxfmt(oxfmt: OxfmtConfig | undefined): NormalizedOxfmt {
+  return {
+    bin: oxfmt?.bin ?? 'oxfmt',
+    configPath: oxfmt?.configPath,
+    disableNestedConfig: oxfmt?.disableNestedConfig ?? false,
+  }
+}
+
+function normalizeOxlinter(oxlint: OxlinterConfig | undefined): NormalizedOxlinter {
+  return {
+    bin: oxlint?.bin ?? 'oxlint',
+    configPath: oxlint?.configPath,
+    disableNestedConfig: oxlint?.disableNestedConfig ?? false,
+    oxfmt: normalizeOxfmt(oxlint?.oxfmt),
+  }
+}
+
+function normalizeEslinter(eslint: EslinterConfig | undefined): NormalizedEslinter {
+  return {
+    bin: eslint?.bin ?? 'eslint',
+    configPath: eslint?.configPath,
+  }
+}
+
 export function normalizeOptions(
   options: OxcLintOptions = {},
   cwd: string = process.cwd(),
@@ -135,12 +193,7 @@ export function normalizeOptions(
   ]
 
   return {
-    oxlintBin: mergedOptions.oxlintBin ?? 'oxlint',
-    configPath: mergedOptions.configPath,
-    disableNestedConfig: mergedOptions.disableNestedConfig ?? false,
-    oxfmtBin: mergedOptions.oxfmtBin ?? 'oxfmt',
-    oxfmtConfigPath: mergedOptions.oxfmtConfigPath,
-    oxfmtDisableNestedConfig: mergedOptions.oxfmtDisableNestedConfig ?? false,
+    linter: mergedOptions.linter ?? 'oxlint',
     extensions: mergedOptions.extensions ?? DEFAULT_EXTENSIONS,
     maxLines: mergedOptions.maxLines ?? 2000,
     log: mergedOptions.log ?? true,
@@ -148,6 +201,8 @@ export function normalizeOptions(
     maxHints: mergedOptions.maxHints ?? 3,
     mode: mergedOptions.mode ?? 'fix',
     ignore,
+    oxlint: normalizeOxlinter(mergedOptions.oxlint),
+    eslint: normalizeEslinter(mergedOptions.eslint),
   }
 }
 
