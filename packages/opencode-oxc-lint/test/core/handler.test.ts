@@ -1,5 +1,5 @@
-import type { CommandRunner } from '../../src/core/types'
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import type { CommandRunner, LinterAdapter } from '../../src/core/types'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -299,5 +299,99 @@ describe('handleToolAfter immediate mode', () => {
     const after = makeOutput()
     await handleToolAfter(writeInput(file), after, { cwd: dir }, states, oxlintAdapter, deps)
     expect(after.output).toContain('err')
+  })
+})
+
+describe('handleToolAfter format diff injection', () => {
+  let dir: string
+
+  beforeEach(() => {
+    dir = join(tmpdir(), `opencode-oxc-lint-fmt-${Date.now()}-${Math.random().toString(16).slice(2)}`)
+    mkdirSync(dir, { recursive: true })
+  })
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true })
+  })
+
+  function makeOutput() {
+    return { title: 't', output: '', metadata: undefined }
+  }
+
+  function writeInput(file: string) {
+    return { tool: 'write' as const, sessionID: 's1', callID: 'c1', args: { filePath: file } }
+  }
+
+  /** Adapter whose format step actually rewrites the file to simulate oxfmt. */
+  function formattingAdapter(transform: (content: string) => string): LinterAdapter {
+    return {
+      name: 'oxlint',
+      format(filePath) {
+        const before = readFileSync(filePath, 'utf8')
+        writeFileSync(filePath, transform(before))
+        return Promise.resolve({ formatted: true, changed: true, output: '' })
+      },
+      lint() {
+        return Promise.resolve({ fixExitCode: 0 })
+      },
+    }
+  }
+
+  it('injects format diff with [oxc-lint: formatted] prefix when formatter changes the file', async () => {
+    const file = join(dir, 'a.ts')
+    writeFileSync(file, 'const x=1\n')
+    const output = makeOutput()
+
+    const adapter = formattingAdapter(content => content.replace('x=1', 'x = 1'))
+    const result = await handleToolAfter(
+      writeInput(file),
+      output,
+      { cwd: dir },
+      new Map(),
+      adapter,
+      { options: { log: false, mode: 'fix' } },
+    )
+
+    expect(result.filesProcessed).toBe(1)
+    expect(output.output).toContain('[oxc-lint: formatted]')
+    expect(output.output).toContain('x=1')
+    expect(output.output).toContain('x = 1')
+  })
+
+  it('injects format diff even when lint is clean', async () => {
+    const file = join(dir, 'a.ts')
+    writeFileSync(file, 'const x=1\n')
+    const output = makeOutput()
+
+    const adapter = formattingAdapter(content => content.replace('x=1', 'x = 1'))
+    const result = await handleToolAfter(
+      writeInput(file),
+      output,
+      { cwd: dir },
+      new Map(),
+      adapter,
+      { options: { log: false, mode: 'fix' } },
+    )
+
+    expect(result.filesWithDiagnostics).toBe(0)
+    expect(output.output).toContain('[oxc-lint: formatted]')
+  })
+
+  it('does not inject format diff in silent mode', async () => {
+    const file = join(dir, 'a.ts')
+    writeFileSync(file, 'const x=1\n')
+    const output = makeOutput()
+
+    const adapter = formattingAdapter(content => content.replace('x=1', 'x = 1'))
+    await handleToolAfter(
+      writeInput(file),
+      output,
+      { cwd: dir },
+      new Map(),
+      adapter,
+      { options: { log: false, mode: 'silent' } },
+    )
+
+    expect(output.output).toBe('')
   })
 })

@@ -1,7 +1,7 @@
 {
   "name": "@jacob-z/opencode-oxc-lint",
   "type": "module",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Run oxfmt + oxlint immediately after each edit in opencode, with LLM-visible diagnostics and max-hints loop prevention",
   "exports": {
     ".": {
@@ -21,9 +21,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^1.17.0"
+    "@opencode-ai/plugin": "^1.17.0",
+    "diff": "^9.0.0"
   },
   "devDependencies": {
+    "@types/diff": "^8.0.0",
     "@types/node": "^20.11.5",
     "bun-types": "^1.3.14",
     "tsdown": "^0.22.3"

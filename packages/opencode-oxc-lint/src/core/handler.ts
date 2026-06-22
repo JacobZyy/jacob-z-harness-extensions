@@ -164,6 +164,9 @@ export async function handleSessionIdle(
         })
       }
 
+      if (result.formatDiff)
+        diagnostics.push(`[formatted] ${file}:\n${result.formatDiff}`)
+
       if (result.message)
         diagnostics.push(`${file}:\n${result.message}`)
     }
@@ -269,13 +272,19 @@ export async function handleToolAfter(
       // 2. pipeline 跑完即计入 processed
       filesProcessed++
 
-      // 3. clean → 清除指纹记录
+      // 3. 注入 format diff（formatter 改动了文件内容，AI 须同步心智模型；
+      //    不受 maxHints 限制——格式化变更是事实信息，非修复提示）
+      if (result.formatDiff && options.mode !== 'silent') {
+        output.output += `\n\n[oxc-lint: formatted] ${file}:\n${result.formatDiff}`
+      }
+
+      // 4. clean → 清除指纹记录
       if (!result.message) {
         stateMap.delete(file)
         continue
       }
 
-      // 4. 指纹去重防闭环
+      // 5. 指纹去重防闭环
       filesWithDiagnostics++
       const fingerprint = hashDiagnostics(result.message)
       const prev = stateMap.get(file)
@@ -298,7 +307,7 @@ export async function handleToolAfter(
         stateMap.set(file, { fingerprint, count: 1 })
       }
 
-      // 5. 按 mode 决定是否注入 output
+      // 6. 按 mode 决定是否注入 lint 诊断
       if (options.mode === 'silent')
         continue
 
