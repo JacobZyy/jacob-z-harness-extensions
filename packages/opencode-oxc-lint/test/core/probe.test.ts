@@ -139,4 +139,87 @@ describe('probe', () => {
       expect(gi.match(/\.jacob-z/g)?.length).toBe(1)
     })
   })
+
+  describe('probeAndInject — eslint.bin auto-detection', () => {
+    function writeLocalEslint() {
+      mkdirSync(join(dir, 'node_modules', '.bin'), { recursive: true })
+      writeFileSync(join(dir, 'node_modules', '.bin', 'eslint'), '#!/usr/bin/env node\n')
+    }
+
+    it('injects eslint.bin when local node_modules/.bin/eslint exists', () => {
+      writePkg({ '@antfu/eslint-config': '^9.0.0' })
+      writeLocalEslint()
+      const result = probeAndInject(dir)
+      expect(result?.written).toBe(true)
+      const cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].linter).toBe('eslint')
+      expect(cfg['oxc-lint'].eslint.bin).toBe('./node_modules/.bin/eslint')
+    })
+
+    it('does not inject eslint.bin when no local binary exists', () => {
+      writePkg({ '@antfu/eslint-config': '^9.0.0' })
+      const result = probeAndInject(dir)
+      expect(result?.written).toBe(true)
+      const cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].eslint).toBeUndefined()
+    })
+
+    it('enriches eslint.bin on a second run even when linter was already set', () => {
+      writePkg({ '@antfu/eslint-config': '^9.0.0' })
+      // First run without local binary — injects linter only
+      probeAndInject(dir)
+      let cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].eslint).toBeUndefined()
+
+      // Second run with local binary now present — should enrich eslint.bin
+      writeLocalEslint()
+      const result = probeAndInject(dir)
+      expect(result?.written).toBe(true)
+      cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].eslint.bin).toBe('./node_modules/.bin/eslint')
+    })
+
+    it('does not overwrite an explicit eslint.bin', () => {
+      writePkg({ '@antfu/eslint-config': '^9.0.0' })
+      writeLocalEslint()
+      mkdirSync(join(dir, '.jacob-z'), { recursive: true })
+      writeFileSync(
+        join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'),
+        JSON.stringify({ 'oxc-lint': { linter: 'eslint', eslint: { bin: '/custom/eslint' } } }),
+      )
+      const result = probeAndInject(dir)
+      expect(result?.written).toBe(false)
+      const cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].eslint.bin).toBe('/custom/eslint')
+    })
+
+    it('preserves existing eslint.configPath when enriching bin', () => {
+      writePkg({ '@antfu/eslint-config': '^9.0.0' })
+      writeLocalEslint()
+      mkdirSync(join(dir, '.jacob-z'), { recursive: true })
+      writeFileSync(
+        join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'),
+        JSON.stringify({ 'oxc-lint': { linter: 'eslint', eslint: { configPath: './eslint.config.mjs' } } }),
+      )
+      const result = probeAndInject(dir)
+      expect(result?.written).toBe(true)
+      const cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].eslint.bin).toBe('./node_modules/.bin/eslint')
+      expect(cfg['oxc-lint'].eslint.configPath).toBe('./eslint.config.mjs')
+    })
+
+    it('does not inject eslint.bin when linter is oxlint', () => {
+      writePkg({ '@antfu/eslint-config': '^9.0.0' })
+      writeLocalEslint()
+      mkdirSync(join(dir, '.jacob-z'), { recursive: true })
+      writeFileSync(
+        join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'),
+        JSON.stringify({ 'oxc-lint': { linter: 'oxlint' } }),
+      )
+      const result = probeAndInject(dir)
+      expect(result).toEqual({ linter: 'oxlint', written: false })
+      const cfg = JSON.parse(readFileSync(join(dir, '.jacob-z', 'jacob-z-harness-opencode.json'), 'utf8'))
+      expect(cfg['oxc-lint'].eslint).toBeUndefined()
+    })
+  })
 })

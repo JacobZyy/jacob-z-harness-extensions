@@ -89,8 +89,14 @@ function ensureGitignoreEntry(dir: string, entry: string): void {
  *
  * Existing fields are preserved. A pre-existing explicit `linter` is **not**
  * overwritten (the user's explicit choice wins), so the first run auto-injects
- * and later runs are idempotent. Returns `undefined` when no eslint config
- * package is detected (nothing is written).
+ * and later runs are idempotent.
+ *
+ * When the effective linter is `eslint`, the function also auto-detects
+ * `node_modules/.bin/eslint` and injects `eslint.bin` so the adapter doesn't
+ * rely on a global `eslint` in `$PATH`. This enrichment is idempotent — a
+ * pre-existing explicit `eslint.bin` is never overwritten.
+ *
+ * Returns `undefined` when no eslint config package is detected.
  */
 export function probeAndInject(cwd: string): ProbeResult | undefined {
   const linter = detectLinter(cwd)
@@ -119,13 +125,42 @@ export function probeAndInject(cwd: string): ProbeResult | undefined {
   const field
     = rawField && typeof rawField === 'object' ? (rawField as Record<string, unknown>) : {}
 
-  // Respect an explicit user choice — do not overwrite.
-  if (field.linter !== undefined)
-    return { linter: field.linter as LinterName, written: false }
+  // Effective linter: respect existing explicit choice, otherwise use detected.
+  const effectiveLinter = (field.linter ?? linter) as LinterName
 
-  config[HARNESS_CONFIG_FIELD] = { ...field, linter }
+  let changed = false
+  const updatedField: Record<string, unknown> = { ...field }
+
+  // Inject linter if not yet set.
+  if (field.linter === undefined) {
+    updatedField.linter = effectiveLinter
+    changed = true
+  }
+
+  // When using eslint, auto-detect local binary so the adapter doesn't
+  // depend on a global `eslint` in `$PATH`.
+  if (effectiveLinter === 'eslint') {
+    const localEslintBin = join(cwd, 'node_modules', '.bin', 'eslint')
+    if (existsSync(localEslintBin)) {
+      const existingEslint = updatedField.eslint
+      const eslintObj
+        = existingEslint && typeof existingEslint === 'object'
+          ? { ...(existingEslint as Record<string, unknown>) }
+          : {}
+      if (!eslintObj.bin) {
+        eslintObj.bin = './node_modules/.bin/eslint'
+        updatedField.eslint = eslintObj
+        changed = true
+      }
+    }
+  }
+
+  if (!changed)
+    return { linter: effectiveLinter, written: false }
+
+  config[HARNESS_CONFIG_FIELD] = updatedField
   mkdirSync(join(cwd, '.jacob-z'), { recursive: true })
   writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`)
 
-  return { linter, written: true }
+  return { linter: effectiveLinter, written: true }
 }

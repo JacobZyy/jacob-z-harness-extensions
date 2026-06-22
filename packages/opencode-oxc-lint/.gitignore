@@ -11,3 +11,4 @@ coverage/
 .bun.lockb
 .memory/
 e2e-tmp/
+.jacob-z/*
